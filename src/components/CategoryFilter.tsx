@@ -16,10 +16,10 @@ const CategoryFilter = ({ activeCategory, onCategoryChange }: CategoryFilterProp
         <button
           key={cat.id}
           onClick={() => onCategoryChange(cat.id)}
-          className={`px-4 py-2 rounded-full text-sm font-accent font-medium transition-all duration-200 ${
+          className={`px-4 py-2 rounded-full text-sm font-accent font-medium transition-all duration-300 border ${
             activeCategory === cat.id
-              ? 'bg-primary text-primary-foreground shadow-md'
-              : 'bg-secondary text-secondary-foreground hover:bg-accent hover:text-accent-foreground'
+              ? 'bg-primary text-primary-foreground shadow-lg border-primary scale-105'
+              : 'bg-card/80 backdrop-blur-sm text-foreground border-border/50 hover:bg-secondary hover:border-border hover:shadow-md'
           }`}
         >
           {cat.label}
