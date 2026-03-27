@@ -18,7 +18,6 @@ const Index = () => {
 
   const filteredItems = useMemo(() => {
     let items = allItems;
-
     if (activeCategory === 'rice-type') items = items.filter(i => i.category === 'rice-type');
     else if (activeCategory === 'rice-dish') items = items.filter(i => i.category === 'rice-dish');
     else if (activeCategory === 'fish') items = items.filter(i => i.category === 'fish');
@@ -37,7 +36,6 @@ const Index = () => {
         i.descriptionEn.toLowerCase().includes(q)
       );
     }
-
     return items;
   }, [allItems, activeCategory, searchQuery]);
 
@@ -45,87 +43,115 @@ const Index = () => {
   const riceDishItems = filteredItems.filter(i => i.category === 'rice-dish');
   const fishList = filteredItems.filter(i => i.category === 'fish');
 
+  const SectionTitle = ({ emoji, children }: { emoji: string; children: React.ReactNode }) => (
+    <div className="flex items-center gap-3 mb-8">
+      <span className="text-3xl">{emoji}</span>
+      <div>
+        <h3 className="font-heading text-2xl md:text-3xl font-bold text-foreground">{children}</h3>
+        <div className="h-0.5 w-16 mt-1 rounded-full bg-gradient-to-r from-gold to-transparent" />
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar onSearch={setSearchQuery} />
       <HeroSection />
 
-      <section id="explore" className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="section-heading">{t('🍽️ ক্যাটাগরি অনুযায়ী অন্বেষণ', '🍽️ Explore by Category')}</h2>
-            <p className="section-subheading">{t('আপনার পছন্দের বিভাগ নির্বাচন করুন', 'Select your preferred category')}</p>
+      {/* Explore Section */}
+      <section id="explore" className="py-20 md:py-24">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <p className="font-accent text-xs tracking-[0.2em] uppercase gold-accent mb-3">
+              {t('সংগ্রহশালা', 'Collection')}
+            </p>
+            <h2 className="section-heading text-3xl md:text-5xl">{t('ক্যাটাগরি অনুযায়ী অন্বেষণ', 'Explore by Category')}</h2>
+            <p className="section-subheading mt-3">{t('আপনার পছন্দের বিভাগ নির্বাচন করুন', 'Select your preferred category')}</p>
           </div>
 
           <CategoryFilter activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
 
-          {/* Rice Types */}
           {riceTypeItems.length > 0 && (
-            <div className="mb-16">
-              <h3 className="font-heading text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <span className="text-3xl">🌾</span> {t('বাংলাদেশের চাল', 'Rice Types of Bangladesh')}
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {riceTypeItems.map((item, i) => (
-                  <FoodCard key={item.id} item={item} index={i} />
-                ))}
+            <div className="mb-20">
+              <SectionTitle emoji="🌾">{t('বাংলাদেশের চাল', 'Rice Types of Bangladesh')}</SectionTitle>
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {riceTypeItems.map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
               </div>
             </div>
           )}
 
-          {/* Cooked Rice */}
           {riceDishItems.length > 0 && (
-            <div className="mb-16">
-              <h3 className="font-heading text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <span className="text-3xl">🍚</span> {t('ভাতের পদ', 'Rice Dishes')}
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {riceDishItems.map((item, i) => (
-                  <FoodCard key={item.id} item={item} index={i} />
-                ))}
+            <div className="mb-20">
+              <SectionTitle emoji="🍚">{t('ভাতের পদ', 'Rice Dishes')}</SectionTitle>
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {riceDishItems.map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
               </div>
             </div>
           )}
 
-          {/* Fish */}
           {fishList.length > 0 && (
             <div>
-              <h3 className="font-heading text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <span className="text-3xl">🐟</span> {t('বাংলাদেশের মাছ', 'Fish of Bangladesh')}
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {fishList.map((item, i) => (
-                  <FoodCard key={item.id} item={item} index={i} />
-                ))}
+              <SectionTitle emoji="🐟">{t('বাংলাদেশের মাছ', 'Fish of Bangladesh')}</SectionTitle>
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {fishList.map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
               </div>
             </div>
           )}
 
           {filteredItems.length === 0 && (
-            <div className="text-center py-20">
-              <p className="text-2xl font-heading text-muted-foreground">
-                {t('কোনো ফলাফল পাওয়া যায়নি', 'No results found')} 😔
+            <div className="text-center py-24">
+              <p className="text-5xl mb-4">😔</p>
+              <p className="text-xl font-heading text-muted-foreground">
+                {t('কোনো ফলাফল পাওয়া যায়নি', 'No results found')}
               </p>
             </div>
           )}
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-16 bg-cream">
-        <div className="container mx-auto px-4 max-w-3xl text-center">
-          <h2 className="section-heading">{t('আমাদের সম্পর্কে', 'About Us')}</h2>
-          <p className="font-body text-muted-foreground leading-relaxed text-lg mb-6">
-            {t(
-              '"মাছে ভাতে বাঙ্গালী" — এই প্রবাদটি বাঙালি জীবনের চিরন্তন সত্য। বাংলাদেশের নদী-নালা, খাল-বিল থেকে আসা তাজা মাছ আর উর্বর জমিতে ফলানো ধানের চাল — এই দুইয়ের সমন্বয়ে তৈরি হয় বাঙালির অনন্য খাদ্য সংস্কৃতি। এই ওয়েবসাইটে আমরা বাংলাদেশের সকল প্রকার চাল, ভাতের পদ ও মাছের বিস্তারিত তথ্য, উচ্চমানের ছবি এবং ঐতিহ্যবাহী রেসিপি তুলে ধরেছি।',
-              '"Mache Bhate Bangali" — this proverb is the eternal truth of Bengali life. This website presents detailed information, high-quality images and traditional recipes of all rice, rice dishes and fish varieties of Bangladesh.'
-            )}
-          </p>
-          <div className="p-4 rounded-xl bg-secondary/50 backdrop-blur-sm border border-border/30">
-            <p className="font-body text-sm text-muted-foreground italic">
+      {/* About Section — Premium Story Style */}
+      <section id="about" className="py-20 md:py-24 bg-cream">
+        <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+          <div className="text-center mb-12">
+            <p className="font-accent text-xs tracking-[0.2em] uppercase gold-accent mb-3">
+              {t('পরিচিতি', 'Introduction')}
+            </p>
+            <h2 className="section-heading text-3xl md:text-5xl">{t('আমাদের গল্প', 'Our Story')}</h2>
+          </div>
+
+          {/* Story Block */}
+          <div className="relative pl-6 md:pl-8 mb-12">
+            <div className="absolute left-0 top-0 bottom-0 w-1 rounded-full bg-gradient-to-b from-gold via-primary to-gold/30" />
+            <blockquote>
+              <p className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-4 leading-snug">
+                {t('"মাছে ভাতে বাঙ্গালী"', '"Mache Bhate Bangali"')}
+              </p>
+              <p className="font-body text-base md:text-lg text-muted-foreground leading-relaxed">
+                {t(
+                  'এই প্রবাদটি বাঙালি জীবনের চিরন্তন সত্য। বাংলাদেশের নদী-নালা, খাল-বিল থেকে আসা তাজা মাছ আর উর্বর জমিতে ফলানো ধানের চাল — এই দুইয়ের সমন্বয়ে তৈরি হয় বাঙালির অনন্য খাদ্য সংস্কৃতি। এই ওয়েবসাইটে আমরা বাংলাদেশের সকল প্রকার চাল, ভাতের পদ ও মাছের বিস্তারিত তথ্য, উচ্চমানের ছবি এবং ঐতিহ্যবাহী রেসিপি তুলে ধরেছি।',
+                  'This proverb is the eternal truth of Bengali life. Fresh fish from rivers and canals, combined with rice from fertile lands — together they form the unique food culture of Bengal. This website presents detailed information, high-quality images and traditional recipes of all rice, rice dishes and fish varieties of Bangladesh.'
+                )}
+              </p>
+            </blockquote>
+          </div>
+
+          {/* Creator Card */}
+          <div className="glass-card p-6 md:p-8 max-w-lg mx-auto text-center border-gold/20">
+            <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl" style={{
+              background: 'linear-gradient(135deg, hsl(var(--gold) / 0.2), hsl(var(--primary) / 0.15))',
+              border: '2px solid hsl(var(--gold) / 0.3)',
+            }}>
+              👨‍💻
+            </div>
+            <h4 className="font-heading text-xl font-bold text-foreground mb-1">Md Nasrullah</h4>
+            <p className="font-accent text-xs tracking-wider uppercase text-muted-foreground mb-3">
+              English Honours • BM College, Barishal
+            </p>
+            <div className="h-px w-12 mx-auto bg-gradient-to-r from-transparent via-gold/40 to-transparent mb-3" />
+            <p className="font-body text-sm text-muted-foreground italic leading-relaxed">
               {t(
-                'এই ওয়েবসাইটটি তৈরি করেছেন নাসরুল্লাহ, যিনি বিএম কলেজ, বরিশাল থেকে ইংরেজি অনার্সে অধ্যয়নরত। বাংলাদেশের খাদ্য ঐতিহ্যকে ডিজিটালভাবে তুলে ধরার লক্ষ্যেই এই উদ্যোগ।',
-                'This website was created by Nasrullah, who is studying English Honours at BM College, Barishal. This initiative aims to digitally preserve the food heritage of Bangladesh.'
+                '"বাংলার খাবারের ঐতিহ্য ডিজিটালভাবে তুলে ধরাই আমার লক্ষ্য"',
+                '"My mission is to digitally preserve the food heritage of Bengal"'
               )}
             </p>
           </div>
