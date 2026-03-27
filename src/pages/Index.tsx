@@ -4,6 +4,7 @@ import HeroSection from '@/components/HeroSection';
 import CategoryFilter from '@/components/CategoryFilter';
 import FoodCard from '@/components/FoodCard';
 import ImageGallery from '@/components/ImageGallery';
+import GamesSection from '@/components/GamesSection';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { riceTypes, riceDishes, fishItems } from '@/data/content';
@@ -131,6 +132,7 @@ const Index = () => {
         </div>
       </section>
 
+      <GamesSection />
       <ImageGallery />
       <Footer />
     </div>
