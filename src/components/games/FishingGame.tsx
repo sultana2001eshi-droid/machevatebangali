@@ -31,19 +31,18 @@ const FishingGame = () => {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border/50 min-h-[360px]">
       {/* Sky */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-100/40 via-blue-50/30 to-transparent dark:from-blue-900/20 dark:via-blue-800/10 h-1/2" />
+      <div className="absolute inset-0 h-1/2" style={{ background: 'linear-gradient(to bottom, hsl(var(--primary) / 0.08), transparent)' }} />
       
       {/* Water */}
-      <div className="absolute bottom-0 left-0 right-0 h-[55%] bg-gradient-to-b from-blue-400/20 via-blue-500/30 to-blue-600/40 dark:from-blue-600/20 dark:via-blue-700/30 dark:to-blue-800/40">
-        {/* Wave lines */}
-        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-blue-300/40 to-transparent dark:via-blue-400/20" 
+      <div className="absolute bottom-0 left-0 right-0 h-[55%]" style={{ background: 'linear-gradient(to bottom, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.3))' }}>
+        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-primary/20 to-transparent" 
              style={{ animation: 'waveMove 3s ease-in-out infinite' }} />
       </div>
 
       {/* Ripple effect */}
       {ripple && (
         <div className="absolute left-1/2 top-[45%] -translate-x-1/2 z-10">
-          <div className="w-16 h-4 rounded-full border-2 border-blue-300/50 animate-ping" />
+          <div className="w-16 h-4 rounded-full border-2 border-primary/30 animate-ping" />
         </div>
       )}
 
