@@ -68,61 +68,71 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
   return (
     <div
       className="glass-card cursor-pointer group"
-      style={{ animationDelay: `${index * 0.08}s` }}
+      style={{ animationDelay: `${index * 0.06}s` }}
       onClick={() => setExpanded(!expanded)}
     >
-      <div className="relative overflow-hidden aspect-[4/3] rounded-t-xl">
+      {/* Image */}
+      <div className="relative overflow-hidden aspect-[4/3]">
         <img
           src={imageMap[item.image] || whiteRice}
           alt={name}
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-accent font-medium bg-card/80 text-foreground backdrop-blur-md border border-border/50 shadow-sm">
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 via-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        {/* Category badge */}
+        <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-accent font-medium backdrop-blur-xl border shadow-sm"
+          style={{
+            background: 'hsl(var(--card) / 0.75)',
+            borderColor: 'hsl(var(--border) / 0.5)',
+            color: 'hsl(var(--foreground))',
+          }}
+        >
           {sub}
         </span>
       </div>
 
-      <div className="p-5">
-        <h3 className="font-heading text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+      {/* Content */}
+      <div className="p-4 md:p-5">
+        <h3 className="font-heading text-base md:text-lg font-bold text-foreground mb-1.5 group-hover:text-primary transition-colors duration-300 leading-tight">
           {name}
         </h3>
 
         {region && (
-          <div className="flex items-center gap-1 mb-2 text-xs text-muted-foreground">
-            <MapPin className="w-3 h-3" />
-            <span className="font-body">{region}</span>
+          <div className="flex items-center gap-1 mb-2 text-[10px] sm:text-xs text-muted-foreground">
+            <MapPin className="w-3 h-3 flex-shrink-0" />
+            <span className="font-body truncate">{region}</span>
           </div>
         )}
 
-        <p className={`font-body text-sm text-muted-foreground leading-relaxed ${expanded ? '' : 'line-clamp-3'}`}>
+        <p className={`font-body text-xs sm:text-sm text-muted-foreground leading-relaxed ${expanded ? '' : 'line-clamp-2 sm:line-clamp-3'}`}>
           {desc}
         </p>
 
         {expanded && (
           <div className="mt-4 space-y-3 animate-fade-in">
             {nutrition && (
-              <div className="p-3 rounded-lg bg-secondary/70 backdrop-blur-sm border border-border/30">
-                <p className="text-xs font-accent font-semibold gold-accent mb-1">
+              <div className="p-3 rounded-xl border border-border/40" style={{ background: 'hsl(var(--secondary) / 0.5)' }}>
+                <p className="text-[10px] font-accent font-semibold gold-accent mb-1 uppercase tracking-wider">
                   {t('পুষ্টিগুণ', 'Nutrition')}
                 </p>
-                <p className="text-sm font-body text-secondary-foreground">{nutrition}</p>
+                <p className="text-xs sm:text-sm font-body text-secondary-foreground">{nutrition}</p>
               </div>
             )}
             {cooking && (
-              <div className="p-3 rounded-lg bg-secondary/70 backdrop-blur-sm border border-border/30">
-                <p className="text-xs font-accent font-semibold gold-accent mb-1">
+              <div className="p-3 rounded-xl border border-border/40" style={{ background: 'hsl(var(--secondary) / 0.5)' }}>
+                <p className="text-[10px] font-accent font-semibold gold-accent mb-1 uppercase tracking-wider">
                   {t('রান্নার পদ্ধতি', 'Cooking Method')}
                 </p>
-                <p className="text-sm font-body text-secondary-foreground">{cooking}</p>
+                <p className="text-xs sm:text-sm font-body text-secondary-foreground">{cooking}</p>
               </div>
             )}
           </div>
         )}
 
-        <button className="mt-3 text-sm font-accent font-medium gold-accent hover:underline transition-all">
-          {expanded ? t('সংক্ষেপ করুন', 'Show Less') : t('বিস্তারিত দেখুন', 'Read More')}
+        <button className="mt-3 text-xs sm:text-sm font-accent font-semibold gold-accent hover:underline transition-all inline-flex items-center gap-1">
+          {expanded ? t('সংক্ষেপ করুন', 'Show Less') : t('বিস্তারিত দেখুন →', 'Read More →')}
         </button>
       </div>
     </div>
