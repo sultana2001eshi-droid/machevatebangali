@@ -1,22 +1,52 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { MapPin } from 'lucide-react';
 import type { FoodItem } from '@/data/content';
 
-// Image imports
+// Image imports — rice types
+import miniketRice from '@/assets/miniket-rice.jpg';
+import nazirshailRice from '@/assets/nazirshail-rice.jpg';
+import kalijiraRice from '@/assets/kalijira-rice.jpg';
+import chiniguraRice from '@/assets/chinigura-rice.jpg';
+import kataribhogRice from '@/assets/kataribhog-rice.jpg';
+import lalChal from '@/assets/lal-chal.jpg';
+import siddhaChal from '@/assets/siddha-chal.jpg';
+import motaChal from '@/assets/mota-chal.jpg';
+
+// Image imports — rice dishes
 import whiteRice from '@/assets/white-rice.jpg';
 import polao from '@/assets/polao.jpg';
 import khichuri from '@/assets/khichuri.jpg';
 import biryani from '@/assets/biryani.jpg';
+import lalBhaat from '@/assets/lal-bhaat.jpg';
+import basmatiBhaat from '@/assets/basmati-bhaat.jpg';
+
+// Image imports — fish
 import ilish from '@/assets/ilish.jpg';
 import rui from '@/assets/rui.jpg';
 import katla from '@/assets/katla.jpg';
 import pabda from '@/assets/pabda.jpg';
 import boal from '@/assets/boal.jpg';
 import chingri from '@/assets/chingri.jpg';
+import shing from '@/assets/shing.jpg';
+import magur from '@/assets/magur.jpg';
+import pangash from '@/assets/pangash.jpg';
+import koi from '@/assets/koi.jpg';
+import shol from '@/assets/shol.jpg';
+import ayre from '@/assets/ayre.jpg';
+import tilapia from '@/assets/tilapia.jpg';
+import rupchanda from '@/assets/rupchanda.jpg';
+import puti from '@/assets/puti.jpg';
 
 const imageMap: Record<string, string> = {
-  'white-rice': whiteRice,
-  polao, khichuri, biryani, ilish, rui, katla, pabda, boal, chingri,
+  'miniket-rice': miniketRice, 'nazirshail-rice': nazirshailRice,
+  'kalijira-rice': kalijiraRice, 'chinigura-rice': chiniguraRice,
+  'kataribhog-rice': kataribhogRice, 'lal-chal': lalChal,
+  'siddha-chal': siddhaChal, 'mota-chal': motaChal,
+  'white-rice': whiteRice, polao, khichuri, biryani,
+  'lal-bhaat': lalBhaat, 'basmati-bhaat': basmatiBhaat,
+  ilish, rui, katla, pabda, boal, chingri, shing, magur,
+  pangash, koi, shol, ayre, tilapia, rupchanda, puti,
 };
 
 interface FoodCardProps {
@@ -33,27 +63,39 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
   const sub = lang === 'bn' ? item.subCategory : item.subCategoryEn;
   const nutrition = lang === 'bn' ? item.nutrition : item.nutritionEn;
   const cooking = lang === 'bn' ? item.cookingMethod : item.cookingMethodEn;
+  const region = lang === 'bn' ? item.region : item.regionEn;
 
   return (
     <div
-      className="food-card cursor-pointer"
-      style={{ animationDelay: `${index * 0.1}s` }}
+      className="glass-card cursor-pointer group"
+      style={{ animationDelay: `${index * 0.08}s` }}
       onClick={() => setExpanded(!expanded)}
     >
-      <div className="relative overflow-hidden aspect-[4/3]">
+      <div className="relative overflow-hidden aspect-[4/3] rounded-t-xl">
         <img
-          src={imageMap[item.image]}
+          src={imageMap[item.image] || whiteRice}
           alt={name}
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-accent font-medium bg-card/90 text-foreground backdrop-blur-sm border border-border">
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-accent font-medium bg-card/80 text-foreground backdrop-blur-md border border-border/50 shadow-sm">
           {sub}
         </span>
       </div>
 
       <div className="p-5">
-        <h3 className="font-heading text-xl font-bold text-foreground mb-2">{name}</h3>
+        <h3 className="font-heading text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+          {name}
+        </h3>
+
+        {region && (
+          <div className="flex items-center gap-1 mb-2 text-xs text-muted-foreground">
+            <MapPin className="w-3 h-3" />
+            <span className="font-body">{region}</span>
+          </div>
+        )}
+
         <p className={`font-body text-sm text-muted-foreground leading-relaxed ${expanded ? '' : 'line-clamp-3'}`}>
           {desc}
         </p>
@@ -61,16 +103,16 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
         {expanded && (
           <div className="mt-4 space-y-3 animate-fade-in">
             {nutrition && (
-              <div className="p-3 rounded-lg bg-secondary">
-                <p className="text-xs font-accent font-semibold text-accent-foreground mb-1 gold-accent">
+              <div className="p-3 rounded-lg bg-secondary/70 backdrop-blur-sm border border-border/30">
+                <p className="text-xs font-accent font-semibold gold-accent mb-1">
                   {t('পুষ্টিগুণ', 'Nutrition')}
                 </p>
                 <p className="text-sm font-body text-secondary-foreground">{nutrition}</p>
               </div>
             )}
             {cooking && (
-              <div className="p-3 rounded-lg bg-secondary">
-                <p className="text-xs font-accent font-semibold text-accent-foreground mb-1 gold-accent">
+              <div className="p-3 rounded-lg bg-secondary/70 backdrop-blur-sm border border-border/30">
+                <p className="text-xs font-accent font-semibold gold-accent mb-1">
                   {t('রান্নার পদ্ধতি', 'Cooking Method')}
                 </p>
                 <p className="text-sm font-body text-secondary-foreground">{cooking}</p>
@@ -79,7 +121,7 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
           </div>
         )}
 
-        <button className="mt-3 text-sm font-accent font-medium gold-accent hover:underline">
+        <button className="mt-3 text-sm font-accent font-medium gold-accent hover:underline transition-all">
           {expanded ? t('সংক্ষেপ করুন', 'Show Less') : t('বিস্তারিত দেখুন', 'Read More')}
         </button>
       </div>
