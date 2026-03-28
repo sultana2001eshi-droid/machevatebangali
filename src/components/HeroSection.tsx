@@ -75,8 +75,8 @@ const HeroSection = () => {
         {/* Stats */}
         <div className="mt-14 grid grid-cols-3 gap-4 max-w-md mx-auto animate-fade-up" style={{ animationDelay: '0.5s' }}>
           {[
-            { num: '৮+', label: t('প্রকার চাল', 'Rice Types') },
-            { num: '১৫+', label: t('প্রকার মাছ', 'Fish Types') },
+            { num: '১০+', label: t('প্রকার চাল', 'Rice Types') },
+            { num: '১৬+', label: t('প্রকার মাছ', 'Fish Types') },
             { num: '৬+', label: t('ভাতের পদ', 'Rice Dishes') },
           ].map((stat, i) => (
             <div key={i} className="text-center">
