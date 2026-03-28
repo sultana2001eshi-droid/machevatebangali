@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MapPin } from 'lucide-react';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 import type { FoodItem } from '@/data/content';
 
 // Image imports — rice types
@@ -12,6 +13,8 @@ import kataribhogRice from '@/assets/kataribhog-rice.jpg';
 import lalChal from '@/assets/lal-chal.jpg';
 import siddhaChal from '@/assets/siddha-chal.jpg';
 import motaChal from '@/assets/mota-chal.jpg';
+import atopChal from '@/assets/atop-chal.jpg';
+import basmatIChal from '@/assets/basmati-chal.jpg';
 
 // Image imports — rice dishes
 import whiteRice from '@/assets/white-rice.jpg';
@@ -37,16 +40,18 @@ import ayre from '@/assets/ayre.jpg';
 import tilapia from '@/assets/tilapia.jpg';
 import rupchanda from '@/assets/rupchanda.jpg';
 import puti from '@/assets/puti.jpg';
+import tengra from '@/assets/tengra.jpg';
 
 const imageMap: Record<string, string> = {
   'miniket-rice': miniketRice, 'nazirshail-rice': nazirshailRice,
   'kalijira-rice': kalijiraRice, 'chinigura-rice': chiniguraRice,
   'kataribhog-rice': kataribhogRice, 'lal-chal': lalChal,
   'siddha-chal': siddhaChal, 'mota-chal': motaChal,
+  'atop-chal': atopChal, 'basmati-chal': basmatIChal,
   'white-rice': whiteRice, polao, khichuri, biryani,
   'lal-bhaat': lalBhaat, 'basmati-bhaat': basmatiBhaat,
   ilish, rui, katla, pabda, boal, chingri, shing, magur,
-  pangash, koi, shol, ayre, tilapia, rupchanda, puti,
+  pangash, koi, shol, ayre, tilapia, rupchanda, puti, tengra,
 };
 
 interface FoodCardProps {
@@ -57,6 +62,7 @@ interface FoodCardProps {
 const FoodCard = ({ item, index }: FoodCardProps) => {
   const { lang, t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>(0.1);
 
   const name = lang === 'bn' ? item.name : item.nameEn;
   const desc = lang === 'bn' ? item.description : item.descriptionEn;
@@ -67,8 +73,9 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
 
   return (
     <div
-      className="glass-card cursor-pointer group"
-      style={{ animationDelay: `${index * 0.06}s` }}
+      ref={ref}
+      className={`glass-card cursor-pointer group transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+      style={{ transitionDelay: `${index * 0.06}s` }}
       onClick={() => setExpanded(!expanded)}
     >
       {/* Image */}
