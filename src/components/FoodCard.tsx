@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MapPin } from 'lucide-react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
@@ -60,6 +61,7 @@ interface FoodCardProps {
 }
 
 const FoodCard = ({ item, index }: FoodCardProps) => {
+  const navigate = useNavigate();
   const { lang, t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>(0.1);
@@ -138,9 +140,22 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
           </div>
         )}
 
-        <button className="mt-3 text-xs sm:text-sm font-accent font-semibold gold-accent hover:underline transition-all inline-flex items-center gap-1">
-          {expanded ? t('সংক্ষেপ করুন', 'Show Less') : t('বিস্তারিত দেখুন →', 'Read More →')}
-        </button>
+        <div className="flex items-center justify-between mt-3">
+          <button
+            onClick={(e) => { e.stopPropagation(); navigate(`/item/${item.id}`); }}
+            className="text-xs sm:text-sm font-accent font-semibold gold-accent hover:underline transition-all inline-flex items-center gap-1"
+          >
+            {t('বিস্তারিত দেখুন →', 'Read More →')}
+          </button>
+          {expanded && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
+              className="text-xs font-accent text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t('সংক্ষেপ', 'Less')}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
