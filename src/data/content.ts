@@ -16,6 +16,16 @@ export interface FoodItem {
   originEn?: string;
   region?: string;
   regionEn?: string;
+  culturalImportance?: string;
+  culturalImportanceEn?: string;
+  detailedDescription?: string;
+  detailedDescriptionEn?: string;
+  cookingSteps?: string[];
+  cookingStepsEn?: string[];
+  taste?: string;
+  tasteEn?: string;
+  price?: string;
+  priceEn?: string;
 }
 
 // ============ চাল (Rice Types) ============
