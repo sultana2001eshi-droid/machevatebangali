@@ -16,6 +16,16 @@ export interface FoodItem {
   originEn?: string;
   region?: string;
   regionEn?: string;
+  culturalImportance?: string;
+  culturalImportanceEn?: string;
+  detailedDescription?: string;
+  detailedDescriptionEn?: string;
+  cookingSteps?: string[];
+  cookingStepsEn?: string[];
+  taste?: string;
+  tasteEn?: string;
+  price?: string;
+  priceEn?: string;
 }
 
 // ============ চাল (Rice Types) ============
@@ -26,6 +36,8 @@ export const riceTypes: FoodItem[] = [
     nameEn: 'Miniket Rice',
     description: 'বাংলাদেশের সবচেয়ে জনপ্রিয় চিকন চাল। সাদা, ঝরঝরে ভাত হয়। মধ্যবিত্ত পরিবারের প্রথম পছন্দ। দৈনন্দিন রান্নায় সবচেয়ে বেশি ব্যবহৃত হয়।',
     descriptionEn: 'The most popular fine rice in Bangladesh. Produces white, fluffy rice. The first choice of middle-class families.',
+    detailedDescription: 'মিনিকেট বাংলাদেশের সবচেয়ে জনপ্রিয় চিকন চাল। এটি মূলত BRRI dhan-28 ও BRRI dhan-29 জাতের ধান থেকে তৈরি হয়। সাদা, ঝরঝরে ও চকচকে ভাত হয় বলে মধ্যবিত্ত ও উচ্চবিত্ত পরিবারে এর চাহিদা সবচেয়ে বেশি। দৈনন্দিন রান্নায় সবচেয়ে বেশি ব্যবহৃত হয় এবং বাজারে সহজলভ্য। এই চালের ভাত দেখতে সুন্দর ও খেতে নরম।',
+    detailedDescriptionEn: 'Miniket is the most popular fine rice in Bangladesh, primarily produced from BRRI dhan-28 and BRRI dhan-29 paddy varieties. Known for its white, fluffy, and glossy cooked rice, it is the top choice across middle and upper-class families. Widely available in markets and used extensively in daily cooking.',
     image: 'miniket-rice',
     category: 'rice-type',
     subCategory: 'চিকন চাল',
@@ -34,6 +46,14 @@ export const riceTypes: FoodItem[] = [
     nutritionEn: 'Per 100g: Calories 130, Carbs 28g, Protein 2.5g',
     region: 'দিনাজপুর, রংপুর, বগুড়া',
     regionEn: 'Dinajpur, Rangpur, Bogra',
+    origin: '"মিনিকেট" নামটি এসেছে ধানের জাতের বাণিজ্যিক নামকরণ থেকে। মূলত উত্তরবঙ্গের কৃষকদের মধ্যে জনপ্রিয় হয়ে সারাদেশে ছড়িয়ে পড়ে।',
+    originEn: 'The name "Miniket" comes from the commercial naming of the paddy variety. Originally popular among North Bengal farmers, it spread nationwide.',
+    culturalImportance: 'বাংলাদেশের শহুরে ও মধ্যবিত্ত পরিবারে মিনিকেট চাল দৈনন্দিন খাদ্যতালিকার প্রধান অংশ। বিয়ে-শাদি, দাওয়াত ও অতিথি আপ্যায়নে মিনিকেটের ভাত পরিবেশন করা একটি প্রচলিত রীতি।',
+    culturalImportanceEn: 'Miniket rice is the staple of urban and middle-class Bangladeshi families. Serving Miniket rice at weddings, feasts, and guest receptions is a common tradition.',
+    taste: 'নরম, ঝরঝরে ও হালকা সুগন্ধি। ভাত চকচকে সাদা হয়।',
+    tasteEn: 'Soft, fluffy, and mildly fragrant. Cooked rice appears glossy white.',
+    price: '৫৫-৭০ টাকা/কেজি (প্রায়)',
+    priceEn: 'Approx. 55-70 BDT/kg',
   },
   {
     id: 'nazirshail',
@@ -54,6 +74,8 @@ export const riceTypes: FoodItem[] = [
     nameEn: 'Kalijira Rice',
     description: 'বাংলাদেশের সবচেয়ে দামি ও সুগন্ধি চাল। ছোট, গোলাকার দানা। পোলাও, পায়েস ও বিশেষ অনুষ্ঠানে ব্যবহৃত হয়। "প্রিন্স অব রাইস" নামে পরিচিত।',
     descriptionEn: 'The most expensive and aromatic rice in Bangladesh. Small, round grains. Known as the "Prince of Rice".',
+    detailedDescription: 'কালিজিরা বাংলাদেশের সবচেয়ে মূল্যবান ও সুগন্ধি চাল। এর দানা ছোট, গোলাকার এবং কালিজিরা মশলার মতো দেখতে বলে এই নাম। আন্তর্জাতিক বাজারে একে "প্রিন্স অব রাইস" বলা হয়। পায়েস, ফিরনি, পোলাও ও বিশেষ অনুষ্ঠানের রান্নায় এই চালের ব্যবহার হয়। ময়মনসিংহ ও শেরপুর অঞ্চলে এই ধান সবচেয়ে ভালো হয়।',
+    detailedDescriptionEn: 'Kalijira is the most valuable and aromatic rice in Bangladesh. Its small, round grains resemble kalijira (nigella) seeds, hence the name. Internationally known as the "Prince of Rice". Used for payesh, firni, polao, and special occasion cooking. Best grown in Mymensingh and Sherpur regions.',
     image: 'kalijira-rice',
     category: 'rice-type',
     subCategory: 'সুগন্ধি চাল',
@@ -62,6 +84,14 @@ export const riceTypes: FoodItem[] = [
     nutritionEn: 'Per 100g: Calories 140, Carbs 30g, Fiber 1.5g',
     region: 'ময়মনসিংহ, শেরপুর',
     regionEn: 'Mymensingh, Sherpur',
+    origin: '"কালিজিরা" নামটি এসেছে কালোজিরা মশলার সাথে চালের দানার আকৃতিগত সাদৃশ্য থেকে।',
+    originEn: 'The name "Kalijira" comes from the visual resemblance of the rice grains to nigella (kalonji) seeds.',
+    culturalImportance: 'পূজা-পার্বণ, বিয়ে ও বিশেষ অনুষ্ঠানে কালিজিরা চালের পায়েস বা ফিরনি পরিবেশন করা বাঙালি ঐতিহ্যের অংশ। এটি আতিথেয়তার প্রতীক।',
+    culturalImportanceEn: 'Serving Kalijira rice payesh or firni at festivals, weddings, and special occasions is part of Bengali tradition. It symbolizes hospitality.',
+    taste: 'মিষ্টি সুগন্ধ, নরম ও আঠালো। রান্নার সময় ঘর সুগন্ধে ভরে যায়।',
+    tasteEn: 'Sweet aroma, soft and slightly sticky. The kitchen fills with fragrance during cooking.',
+    price: '১৫০-২৫০ টাকা/কেজি',
+    priceEn: 'Approx. 150-250 BDT/kg',
   },
   {
     id: 'chinigura',
@@ -200,6 +230,8 @@ export const riceDishes: FoodItem[] = [
     nameEn: 'Khichuri',
     description: 'বর্ষার দিনে গরম খিচুড়ি আর ইলিশ ভাজা — বাঙালির স্বর্গীয় খাবার। চাল, ডাল, সবজি আর মশলা দিয়ে এক পাত্রে রান্না।',
     descriptionEn: 'Rainy day comfort food — rice, lentils and vegetables cooked together. Served with mustard oil and green chillies.',
+    detailedDescription: 'খিচুড়ি বাঙালি রান্নাঘরের অন্যতম প্রাচীন ও প্রিয় পদ। চাল, মসুর বা মুগ ডাল, সবজি (আলু, ফুলকপি, মটরশুঁটি), হলুদ ও ঘি দিয়ে এক পাত্রে রান্না করা হয়। বর্ষার দিনে গরম খিচুড়ি, ইলিশ ভাজা, বেগুনি ও ডিম ভাজির কম্বিনেশন বাঙালির স্বর্গীয় খাবার। দুর্গাপূজা ও বিভিন্ন ধর্মীয় অনুষ্ঠানে ভোগের খিচুড়ি একটি পবিত্র পদ।',
+    detailedDescriptionEn: 'Khichuri is one of the oldest and most beloved Bengali dishes. Cooked with rice, lentils, vegetables (potato, cauliflower, peas), turmeric, and ghee in one pot. On rainy days, the combination of hot khichuri with fried Hilsa, beguni, and egg is divine. Bhog khichuri served during Durga Puja and religious ceremonies is considered sacred.',
     image: 'khichuri',
     category: 'rice-dish',
     subCategory: 'ঐতিহ্যবাহী ভাত',
@@ -208,6 +240,26 @@ export const riceDishes: FoodItem[] = [
     nutritionEn: 'Per 100g: Calories 150, Protein 5g, Fiber 2g',
     cookingMethod: 'চাল ও ডাল ধুয়ে সবজি, হলুদ, লবণ, তেল দিয়ে মাঝারি আঁচে রান্না করুন।',
     cookingMethodEn: 'Wash rice and lentils, cook with vegetables, turmeric, salt and oil on medium heat.',
+    culturalImportance: 'বর্ষাকালে খিচুড়ি-ইলিশ বাঙালি সংস্কৃতির একটি আইকনিক কম্বিনেশন। দুর্গাপূজায় ভোগের খিচুড়ি ধর্মীয় তাৎপর্য বহন করে। দরিদ্র ও ধনী — সকলের কাছেই খিচুড়ি সমান প্রিয়।',
+    culturalImportanceEn: 'Rainy day Khichuri-Ilish is an iconic Bengali cultural combination. Bhog Khichuri during Durga Puja carries religious significance. Loved equally by all socioeconomic classes.',
+    taste: 'নরম, মসলাযুক্ত, ঘি-এর সুগন্ধি। কমফোর্ট ফুডের সেরা উদাহরণ।',
+    tasteEn: 'Soft, spiced, ghee-fragrant. The ultimate comfort food.',
+    cookingSteps: [
+      'চাল ও মসুর ডাল আলাদা করে ধুয়ে ৩০ মিনিট ভিজিয়ে রাখুন',
+      'কড়াইতে ঘি গরম করে তেজপাতা, দারুচিনি, এলাচ ফোড়ন দিন',
+      'পেঁয়াজ কুচি দিয়ে সোনালি করুন, আদা-রসুন বাটা দিন',
+      'আলু, ফুলকপি ও সবজি দিয়ে ভুনুন ৩-৪ মিনিট',
+      'হলুদ, লবণ, মরিচ ও চাল-ডাল দিয়ে পানি যোগ করুন',
+      'ঢেকে মাঝারি আঁচে ২০-২৫ মিনিট রান্না করুন, উপরে ঘি দিয়ে পরিবেশন করুন',
+    ],
+    cookingStepsEn: [
+      'Wash rice and masoor dal separately, soak for 30 minutes',
+      'Heat ghee in a pot, temper bay leaf, cinnamon, and cardamom',
+      'Fry chopped onions until golden, add ginger-garlic paste',
+      'Add potatoes, cauliflower and vegetables, sauté for 3-4 minutes',
+      'Add turmeric, salt, chili, rice-dal and water',
+      'Cover and cook on medium heat for 20-25 minutes, drizzle ghee before serving',
+    ],
   },
   {
     id: 'biryani',
@@ -256,6 +308,8 @@ export const fishItems: FoodItem[] = [
     nameEn: 'Hilsa',
     description: 'বাংলাদেশের জাতীয় মাছ। পদ্মা নদীর ইলিশের স্বাদ অতুলনীয়। সরষে ইলিশ, ভাপা ইলিশ, ইলিশ পাতুরি — প্রতিটি রেসিপি বাঙালির গর্ব।',
     descriptionEn: 'National fish of Bangladesh. Padma river Hilsa is unmatched in taste. Every recipe is a Bengali pride.',
+    detailedDescription: 'ইলিশ (Tenualosa ilisha) বাংলাদেশের জাতীয় মাছ এবং বাঙালি সংস্কৃতির অবিচ্ছেদ্য অংশ। পদ্মা, মেঘনা ও যমুনা নদীর ইলিশ সারা বিশ্বে বিখ্যাত। বর্ষাকালে ইলিশের প্রজনন মৌসুমে এই মাছের স্বাদ সবচেয়ে ভালো হয়। ইলিশের তেলে ওমেগা-৩ ফ্যাটি এসিড প্রচুর পরিমাণে থাকে যা হৃদরোগ প্রতিরোধে সাহায্য করে।',
+    detailedDescriptionEn: 'Hilsa (Tenualosa ilisha) is the national fish of Bangladesh and an inseparable part of Bengali culture. Hilsa from the Padma, Meghna, and Jamuna rivers is world-famous. During the monsoon breeding season, the fish tastes its best. Hilsa oil is rich in Omega-3 fatty acids that help prevent heart disease.',
     image: 'ilish',
     category: 'fish',
     subCategory: 'নদীর মাছ',
@@ -264,6 +318,26 @@ export const fishItems: FoodItem[] = [
     nutritionEn: 'Per 100g: Calories 273, Protein 22g, Rich in Omega-3',
     cookingMethod: 'সরষে বাটা, হলুদ, লঙ্কা বাটা দিয়ে কলাপাতায় মুড়ে ভাপে রান্না।',
     cookingMethodEn: 'Marinate with mustard paste, turmeric. Wrap in banana leaf and steam.',
+    culturalImportance: 'বাংলাদেশে ইলিশ শুধু মাছ নয়, এটি সংস্কৃতির প্রতীক। পহেলা বৈশাখে "পান্তা-ইলিশ" বাঙালির জাতীয় উৎসবের অপরিহার্য অংশ। বিয়ে, ঈদ ও বিশেষ অনুষ্ঠানে ইলিশ পরিবেশন করা আভিজাত্যের প্রতীক। ২০১৭ সালে ইলিশ বাংলাদেশের ভৌগোলিক নির্দেশক (GI) পণ্য হিসেবে স্বীকৃতি পায়।',
+    culturalImportanceEn: 'In Bangladesh, Hilsa is not just a fish — it is a cultural symbol. "Panta-Ilish" on Pohela Boishakh is an essential part of the national celebration. Serving Hilsa at weddings, Eid, and special occasions is a mark of prestige. In 2017, Hilsa received Geographical Indication (GI) recognition for Bangladesh.',
+    taste: 'তৈলাক্ত, সুগন্ধি ও অনন্য স্বাদ। মাংস নরম ও রসালো।',
+    tasteEn: 'Oily, aromatic, and uniquely flavored. Meat is tender and juicy.',
+    cookingSteps: [
+      'ইলিশ মাছ পরিষ্কার করে ধুয়ে টুকরো করুন',
+      'সরষে বাটা, হলুদ গুঁড়া, লঙ্কা বাটা, লবণ ও সরষের তেল মিশিয়ে মেরিনেট করুন ৩০ মিনিট',
+      'কলাপাতা নিয়ে প্রতিটি টুকরো আলাদা করে মুড়ে দিন',
+      'স্টিমারে বা ভাপে ২০-২৫ মিনিট রান্না করুন',
+      'কলাপাতা খুলে গরম ভাতের সাথে পরিবেশন করুন',
+    ],
+    cookingStepsEn: [
+      'Clean and cut Hilsa into pieces',
+      'Marinate with mustard paste, turmeric, chili paste, salt, and mustard oil for 30 minutes',
+      'Wrap each piece individually in banana leaves',
+      'Steam for 20-25 minutes',
+      'Unwrap and serve with hot rice',
+    ],
+    price: '৮০০-২০০০ টাকা/কেজি (মৌসুম অনুযায়ী)',
+    priceEn: 'Approx. 800-2000 BDT/kg (seasonal)',
   },
   {
     id: 'rui',
@@ -271,12 +345,36 @@ export const fishItems: FoodItem[] = [
     nameEn: 'Rohu',
     description: 'বাংলাদেশের সবচেয়ে জনপ্রিয় মিঠা পানির মাছ। রুই মাছের কালিয়া, দোপেঁয়াজা, ঝোল — সবই অসাধারণ।',
     descriptionEn: 'The most popular freshwater fish in Bangladesh. Rohu curry, dopeyaja, jhol — all extraordinary.',
+    detailedDescription: 'রুই (Labeo rohita) বাংলাদেশের সবচেয়ে জনপ্রিয় ও সহজলভ্য মিঠা পানির মাছ। এটি কার্প পরিবারের অন্যতম সদস্য। রুই মাছের কালিয়া, দোপেঁয়াজা, ঝোল, ভুনা ও মাছের মাথা দিয়ে মুড়িঘণ্ট — প্রতিটি রেসিপিই অসাধারণ। দৈনন্দিন খাদ্যতালিকায় রুই মাছ বাঙালি পরিবারের অপরিহার্য অংশ।',
+    detailedDescriptionEn: 'Rohu (Labeo rohita) is the most popular and widely available freshwater fish in Bangladesh. A member of the carp family, Rohu is cooked in many forms — kalia, dopeyaja, jhol, bhuna, and fish head murighonto — each recipe extraordinary. It is an essential part of daily Bengali meals.',
     image: 'rui',
     category: 'fish',
     subCategory: 'নদীর মাছ',
     subCategoryEn: 'River Fish',
     nutrition: 'প্রতি ১০০ গ্রামে: ক্যালোরি ৯৭, প্রোটিন ১৭ গ্রাম, চর্বি ১.৪ গ্রাম',
     nutritionEn: 'Per 100g: Calories 97, Protein 17g, Fat 1.4g',
+    culturalImportance: 'বাঙালি পরিবারে রুই মাছ দৈনন্দিন রান্নার অপরিহার্য অংশ। বিয়ের অনুষ্ঠানে "তত্ত্ব" হিসেবে বড় রুই মাছ পাঠানো একটি প্রাচীন রীতি। অতিথি আপ্যায়নে রুই মাছের কালিয়া পরিবেশন করা সম্মানের প্রতীক।',
+    culturalImportanceEn: 'Rohu is essential in daily Bengali cooking. Sending a large Rohu fish as "totto" (gift) at weddings is an ancient tradition. Serving Rohu kalia to guests is a mark of respect.',
+    taste: 'মিষ্টি ও কোমল মাংস। হালকা তৈলাক্ত।',
+    tasteEn: 'Sweet, tender meat. Mildly oily.',
+    price: '২৫০-৪০০ টাকা/কেজি',
+    priceEn: 'Approx. 250-400 BDT/kg',
+    cookingSteps: [
+      'রুই মাছ টুকরো করে হলুদ ও লবণ মাখিয়ে রাখুন',
+      'তেলে মাছ হালকা ভেজে তুলে রাখুন',
+      'একই তেলে পেঁয়াজ কুচি সোনালি করুন',
+      'আদা-রসুন বাটা, হলুদ, মরিচ ও টমেটো দিয়ে ভুনুন',
+      'পানি দিয়ে ঝোল করে মাছ দিন, ঢেকে ১০-১৫ মিনিট রান্না করুন',
+      'ধনেপাতা ছিটিয়ে গরম ভাতের সাথে পরিবেশন করুন',
+    ],
+    cookingStepsEn: [
+      'Cut Rohu into pieces, marinate with turmeric and salt',
+      'Lightly fry the fish in oil and set aside',
+      'In the same oil, fry sliced onions until golden',
+      'Add ginger-garlic paste, turmeric, chili, and tomatoes, sauté well',
+      'Add water to make gravy, add fish, cover and cook 10-15 minutes',
+      'Garnish with coriander leaves and serve with hot rice',
+    ],
   },
   {
     id: 'katla',

@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Index from "./pages/Index.tsx";
 import About from "./pages/About.tsx";
 import Terms from "./pages/Terms.tsx";
+import ItemDetail from "./pages/ItemDetail.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/item/:id" element={<ItemDetail />} />
               <Route path="/about" element={<About />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="*" element={<NotFound />} />
