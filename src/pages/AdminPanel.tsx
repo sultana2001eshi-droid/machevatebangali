@@ -124,6 +124,8 @@ const AdminPanel = () => {
   const [duplicateWarning, setDuplicateWarning] = useState('');
   const [showEnglish, setShowEnglish] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [heroImages, setHeroImages] = useState<{ id: string; image_url: string; display_order: number }[]>([]);
+  const [showHeroManager, setShowHeroManager] = useState(false);
 
   // Debounce ref for auto-translate
   const translateTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -134,7 +136,39 @@ const AdminPanel = () => {
     if (!authLoading && user && !isAdmin) { signOut(); navigate('/admin-login'); }
   }, [authLoading, user, isAdmin]);
 
-  useEffect(() => { if (isAdmin) loadItems(); }, [isAdmin]);
+  useEffect(() => { if (isAdmin) { loadItems(); loadHeroImages(); } }, [isAdmin]);
+
+  const loadHeroImages = async () => {
+    const { data } = await supabase.from('hero_images').select('*').order('display_order', { ascending: true });
+    setHeroImages((data || []) as any[]);
+  };
+
+  const handleHeroUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const ext = file.name.split('.').pop();
+      const fileName = `hero-${Date.now()}.${ext}`;
+      const { error: uploadErr } = await supabase.storage.from('images').upload(fileName, file, { cacheControl: '3600' });
+      if (uploadErr) throw uploadErr;
+      const url = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
+      const maxOrder = heroImages.reduce((m, h) => Math.max(m, h.display_order), 0);
+      const { error } = await supabase.from('hero_images').insert({ image_url: url, display_order: maxOrder + 1 });
+      if (error) throw error;
+      toast.success(t('হিরো ইমেজ যোগ হয়েছে', 'Hero image added'));
+      loadHeroImages();
+    } catch (err: any) { toast.error(err.message); }
+  };
+
+  const deleteHeroImage = async (id: string, url: string) => {
+    try {
+      const parts = url.split('/images/');
+      if (parts.length >= 2) await supabase.storage.from('images').remove([parts[1]]);
+      await supabase.from('hero_images').delete().eq('id', id);
+      toast.success(t('হিরো ইমেজ মুছে ফেলা হয়েছে', 'Hero image deleted'));
+      loadHeroImages();
+    } catch (err: any) { toast.error(err.message); }
+  };
 
   // ─── Subcategory_en sync ──────────────────────────────────
   useEffect(() => {
@@ -398,7 +432,35 @@ const AdminPanel = () => {
           })}
         </div>
 
-        {/* ── Toolbar ── */}
+        {/* ── Hero Image Manager ── */}
+        <div className="mb-6">
+          <button onClick={() => setShowHeroManager(!showHeroManager)}
+            className="inline-flex items-center gap-2 text-sm font-body font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <ImageIcon className="w-4 h-4" /> {t('হিরো ইমেজ পরিচালনা', 'Manage Hero Images')}
+            {showHeroManager ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
+          {showHeroManager && (
+            <div className="glass-card p-4 mt-3">
+              <div className="flex flex-wrap gap-3 mb-3">
+                {heroImages.map(h => (
+                  <div key={h.id} className="relative w-28 h-20 rounded-xl overflow-hidden group">
+                    <img src={h.image_url} alt="Hero" className="w-full h-full object-cover" />
+                    <button onClick={() => deleteHeroImage(h.id, h.image_url)}
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                      <X className="w-3 h-3" />
+                    </button>
+                    <span className="absolute bottom-1 left-1 text-[9px] bg-black/60 text-white px-1 rounded">{h.display_order}</span>
+                  </div>
+                ))}
+              </div>
+              <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-foreground text-xs font-body hover:bg-accent transition-colors">
+                <Plus className="w-3 h-3" /> {t('হিরো ইমেজ যোগ করুন', 'Add Hero Image')}
+                <input type="file" accept="image/*" onChange={handleHeroUpload} className="hidden" />
+              </label>
+            </div>
+          )}
+        </div>
+
         <div className="flex flex-wrap items-center gap-3 mb-6">
           {!showForm && (
             <button onClick={() => { resetForm(); setShowForm(true); }}

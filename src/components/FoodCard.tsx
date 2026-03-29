@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { MapPin, ImageIcon } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import type { FoodItem } from '@/data/content';
-
-interface FoodCardProps {
-  item: FoodItem;
-  index: number;
-}
 
 const categoryEmoji: Record<string, string> = {
   'rice-type': '🌾',
   'rice-dish': '🍚',
   'fish': '🐟',
 };
+
+interface FoodCardProps {
+  item: FoodItem;
+  index: number;
+}
 
 const FoodCard = ({ item, index }: FoodCardProps) => {
   const navigate = useNavigate();
@@ -28,7 +28,6 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
   const nutrition = lang === 'bn' ? item.nutrition : item.nutritionEn;
   const cooking = lang === 'bn' ? item.cookingMethod : item.cookingMethodEn;
   const region = lang === 'bn' ? item.region : item.regionEn;
-
   const hasDirectImage = item.image && item.image.startsWith('http');
 
   return (
@@ -38,29 +37,27 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
       style={{ transitionDelay: `${index * 0.06}s` }}
       onClick={() => setExpanded(!expanded)}
     >
-      {/* Image */}
-      <div className="relative overflow-hidden aspect-[4/3] bg-secondary">
+      {/* Image with hover zoom */}
+      <div className="relative overflow-hidden aspect-[4/3] bg-secondary rounded-t-2xl">
         {hasDirectImage ? (
           <img
             src={item.image}
             alt={name}
             loading="lazy"
             className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-secondary to-muted">
             <span className="text-4xl">{categoryEmoji[item.category] || '🍽️'}</span>
           </div>
         )}
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 via-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        {/* Hover gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         {/* Category badge */}
         <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-accent font-medium backdrop-blur-xl border shadow-sm"
           style={{
-            background: 'hsl(var(--card) / 0.75)',
+            background: 'hsl(var(--card) / 0.8)',
             borderColor: 'hsl(var(--border) / 0.5)',
             color: 'hsl(var(--foreground))',
           }}
