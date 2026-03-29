@@ -2,22 +2,82 @@ import { useState } from 'react';
 import { useWikimediaImage } from '@/hooks/useWikimediaImage';
 import { ImageIcon } from 'lucide-react';
 
-// Local AI-generated fallback images for items that may not have Wikimedia coverage
-import parboiledRiceFallback from '@/assets/fallback/parboiled-rice.jpg';
-import coarseRiceFallback from '@/assets/fallback/coarse-rice.jpg';
+// AI-generated photorealistic fallback images for every item
+import hilsaFallback from '@/assets/fallback/hilsa-fish.jpg';
+import rohuFallback from '@/assets/fallback/rohu-fish.jpg';
+import catlaFallback from '@/assets/fallback/catla-fish.jpg';
+import pabdaFallback from '@/assets/fallback/pabda-fish.jpg';
+import boalFallback from '@/assets/fallback/boal-fish.jpg';
+import prawnFallback from '@/assets/fallback/prawn.jpg';
+import tengraFallback from '@/assets/fallback/tengra-fish.jpg';
+import shingFallback from '@/assets/fallback/shing-fish.jpg';
+import magurFallback from '@/assets/fallback/magur-fish.jpg';
+import pangasiusFallback from '@/assets/fallback/pangasius-fish.jpg';
+import koiFallback from '@/assets/fallback/koi-fish.jpg';
+import snakeheadFallback from '@/assets/fallback/snakehead-fish.jpg';
+import ayreFallback from '@/assets/fallback/ayre-fish.jpg';
+import tilapiaFallback from '@/assets/fallback/tilapia-fish.jpg';
+import pomfretFallback from '@/assets/fallback/pomfret-fish.jpg';
+import putiFallback from '@/assets/fallback/puti-fish.jpg';
+import miniketFallback from '@/assets/fallback/miniket-rice.jpg';
+import parboiledFallback from '@/assets/fallback/parboiled-rice.jpg';
+import coarseFallback from '@/assets/fallback/coarse-rice.jpg';
 import redRiceCookedFallback from '@/assets/fallback/red-rice-cooked.jpg';
 import basmatCookedFallback from '@/assets/fallback/basmati-cooked.jpg';
+import biryaniDishFallback from '@/assets/fallback/biryani.jpg';
+import polaoFallback from '@/assets/fallback/polao.jpg';
+import khichuriFallback from '@/assets/fallback/khichuri.jpg';
 
+// Complete fallback mapping: nameEn → local image (covers ALL items)
 const LOCAL_FALLBACKS: Record<string, string> = {
-  'Parboiled Rice': parboiledRiceFallback,
-  'Coarse Rice': coarseRiceFallback,
-  'Red Rice:rice-dish': redRiceCookedFallback,
-  'Basmati Rice:rice-dish': basmatCookedFallback,
+  // Fish
+  'Hilsa': hilsaFallback,
+  'Rohu': rohuFallback,
+  'Catla': catlaFallback,
+  'Pabda': pabdaFallback,
+  'Boal': boalFallback,
+  'Prawn': prawnFallback,
+  'Tengra': tengraFallback,
+  'Shing': shingFallback,
+  'Magur': magurFallback,
+  'Pangasius': pangasiusFallback,
+  'Koi': koiFallback,
+  'Snakehead': snakeheadFallback,
+  'Ayre': ayreFallback,
+  'Tilapia': tilapiaFallback,
+  'Pomfret': pomfretFallback,
+  'Puti': putiFallback,
+  // Rice types
+  'Miniket Rice': miniketFallback,
+  'Nazirshail Rice': miniketFallback,
+  'Kalijira Rice': miniketFallback,
+  'Chinigura Rice': miniketFallback,
+  'Kataribhog Rice': miniketFallback,
+  'Atop Rice': miniketFallback,
+  'Basmati Rice': basmatCookedFallback,
+  'Parboiled Rice': parboiledFallback,
+  'Coarse Rice': coarseFallback,
+  'Red Rice': miniketFallback,
+  // Rice dishes
+  'White Rice': miniketFallback,
+  'Polao': polaoFallback,
+  'Khichuri': khichuriFallback,
+  'Biryani': biryaniDishFallback,
+  'Fried Rice': polaoFallback,
+  'Payesh': miniketFallback,
+  'Panta Bhat': miniketFallback,
 };
 
-function getLocalFallback(nameEn: string, category: string): string | undefined {
-  // Check category-specific key first
-  return LOCAL_FALLBACKS[`${nameEn}:${category}`] || LOCAL_FALLBACKS[nameEn];
+// Category-specific fallbacks for items not in the map
+const CATEGORY_FALLBACKS: Record<string, string> = {
+  'fish': hilsaFallback,
+  'rice-type': miniketFallback,
+  'rice-dish': polaoFallback,
+};
+
+function getLocalFallback(nameEn: string, category: string): string {
+  // Always return a fallback — never allow empty
+  return LOCAL_FALLBACKS[nameEn] || CATEGORY_FALLBACKS[category] || miniketFallback;
 }
 
 interface RealImageProps {
@@ -41,35 +101,19 @@ const RealImage = ({ nameEn, category, alt, className = '', localFallback }: Rea
     );
   }
 
-  if (!src || error) {
-    // Final fallback: show resolved local fallback or a styled gradient placeholder
-    if (resolvedFallback && !error) {
-      return (
-        <img
-          src={resolvedFallback}
-          alt={alt}
-          loading="lazy"
-          className={className}
-        />
-      );
-    }
-    
-    // Absolute last resort: styled gradient with category emoji (should rarely happen)
-    const emoji = category === 'fish' ? '🐟' : category === 'rice-type' ? '🌾' : '🍚';
-    return (
-      <div className={`flex flex-col items-center justify-center bg-gradient-to-br from-primary/10 to-accent/20 ${className}`}>
-        <span className="text-4xl mb-1 opacity-60">{emoji}</span>
-        <span className="text-[10px] text-muted-foreground/60 font-body px-2 text-center leading-tight">{alt}</span>
-      </div>
-    );
-  }
+  // If Wikimedia image loaded but errored, or no src — use local fallback (NEVER emoji)
+  const displaySrc = (!src || error) ? resolvedFallback : src;
 
   return (
     <img
-      src={src}
+      src={displaySrc}
       alt={alt}
       loading="lazy"
-      onError={() => setError(true)}
+      onError={() => {
+        if (!error) {
+          setError(true);
+        }
+      }}
       className={`object-cover ${className}`}
     />
   );
