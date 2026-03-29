@@ -4,7 +4,7 @@ import { useAdmin } from '@/hooks/useAdmin';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2, LogOut, Image as ImageIcon, ArrowLeft, X, Save, LayoutGrid, List, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, LogOut, Image as ImageIcon, ArrowLeft, X, Save, LayoutGrid, List, Search, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import type { DbItem } from '@/hooks/useItems';
 import {
@@ -74,7 +74,8 @@ const AdminPanel = () => {
   const [filterCategory, setFilterCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string; imageUrl?: string } | null>(null);
+  const [duplicateWarning, setDuplicateWarning] = useState('');
 
   useEffect(() => {
     if (!authLoading && !user) navigate('/admin-login');
@@ -88,23 +89,26 @@ const AdminPanel = () => {
     if (isAdmin) loadItems();
   }, [isAdmin]);
 
-  // Auto-set subcategory_en when subcategory changes
   useEffect(() => {
     const subs = SUBCATEGORIES[form.category];
     if (subs && form.subcategory) {
       const match = subs.find(s => s.value === form.subcategory);
-      if (match) {
-        setForm(prev => ({ ...prev, subcategory_en: match.labelEn }));
-      }
+      if (match) setForm(prev => ({ ...prev, subcategory_en: match.labelEn }));
     }
   }, [form.subcategory, form.category]);
 
+  // Duplicate name check
+  useEffect(() => {
+    if (!form.name.trim()) { setDuplicateWarning(''); return; }
+    const existing = items.find(i =>
+      i.name.toLowerCase() === form.name.toLowerCase().trim() && i.id !== editingId
+    );
+    setDuplicateWarning(existing ? t(`"${existing.name}" নামে ইতিমধ্যে আইটেম আছে`, `An item named "${existing.name}" already exists`) : '');
+  }, [form.name, items, editingId]);
+
   const loadItems = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from('items')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const { data } = await supabase.from('items').select('*').order('created_at', { ascending: false });
     setItems((data || []) as DbItem[]);
     setLoading(false);
   };
@@ -120,21 +124,37 @@ const AdminPanel = () => {
   const uploadImage = async (file: File): Promise<string> => {
     const ext = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await supabase.storage
-      .from('images')
-      .upload(fileName, file, { cacheControl: '3600', upsert: false });
+    const { error } = await supabase.storage.from('images').upload(fileName, file, { cacheControl: '3600', upsert: false });
     if (error) throw error;
     const { data: { publicUrl } } = supabase.storage.from('images').getPublicUrl(fileName);
     return publicUrl;
   };
 
+  const deleteStorageImage = async (url: string) => {
+    try {
+      const parts = url.split('/images/');
+      if (parts.length < 2) return;
+      const filePath = parts[1];
+      await supabase.storage.from('images').remove([filePath]);
+    } catch { /* ignore cleanup errors */ }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (duplicateWarning && !editingId) {
+      toast.error(duplicateWarning);
+      return;
+    }
     setSaving(true);
 
     try {
       let imageUrl = form.image_url;
+
+      // If uploading new image and replacing old one, delete old
       if (imageFile) {
+        if (editingId && form.image_url) {
+          await deleteStorageImage(form.image_url);
+        }
         imageUrl = await uploadImage(imageFile);
       }
 
@@ -191,6 +211,7 @@ const AdminPanel = () => {
     setImagePreview('');
     setEditingId(null);
     setShowForm(false);
+    setDuplicateWarning('');
   };
 
   const handleEdit = (item: DbItem) => {
@@ -220,6 +241,10 @@ const AdminPanel = () => {
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     try {
+      // Delete image from storage
+      if (deleteTarget.imageUrl) {
+        await deleteStorageImage(deleteTarget.imageUrl);
+      }
       const { error } = await supabase.from('items').delete().eq('id', deleteTarget.id);
       if (error) throw error;
       toast.success(t(`"${deleteTarget.name}" মুছে ফেলা হয়েছে`, `"${deleteTarget.name}" deleted successfully`));
@@ -235,11 +260,7 @@ const AdminPanel = () => {
   const handleSubcategoryChange = (value: string) => {
     const subs = SUBCATEGORIES[form.category];
     const match = subs?.find(s => s.value === value);
-    setForm(prev => ({
-      ...prev,
-      subcategory: value,
-      subcategory_en: match?.labelEn || prev.subcategory_en,
-    }));
+    setForm(prev => ({ ...prev, subcategory: value, subcategory_en: match?.labelEn || prev.subcategory_en }));
   };
 
   const handleCategoryChange = (value: string) => {
@@ -358,9 +379,20 @@ const AdminPanel = () => {
                     </div>
                     <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                   </label>
-                  <p className="text-xs text-muted-foreground font-body mt-2">
-                    {t('ক্লিক করে ছবি আপলোড করুন। 4:3 অনুপাতের ছবি সেরা।', 'Click to upload. 4:3 ratio images work best.')}
-                  </p>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-body mt-2">
+                      {t('ক্লিক করে ছবি আপলোড করুন। 4:3 অনুপাতের ছবি সেরা।', 'Click to upload. 4:3 ratio images work best.')}
+                    </p>
+                    {imagePreview && (
+                      <button
+                        type="button"
+                        onClick={() => { setImageFile(null); setImagePreview(''); setForm(prev => ({ ...prev, image_url: '' })); }}
+                        className="mt-1 text-xs text-destructive hover:underline font-body"
+                      >
+                        {t('ছবি মুছুন', 'Remove image')}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -399,7 +431,15 @@ const AdminPanel = () => {
 
               {/* Names */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField label={t('নাম (বাংলা) *', 'Name (Bangla) *')} value={form.name} onChange={v => setForm({ ...form, name: v })} required />
+                <div>
+                  <FormField label={t('নাম (বাংলা) *', 'Name (Bangla) *')} value={form.name} onChange={v => setForm({ ...form, name: v })} required />
+                  {duplicateWarning && (
+                    <div className="flex items-center gap-1.5 mt-1.5 text-xs text-destructive font-body">
+                      <AlertTriangle className="w-3 h-3" />
+                      {duplicateWarning}
+                    </div>
+                  )}
+                </div>
                 <FormField label={t('নাম (English)', 'Name (English)')} value={form.name_en} onChange={v => setForm({ ...form, name_en: v })} />
               </div>
 
@@ -434,7 +474,7 @@ const AdminPanel = () => {
 
               <button
                 type="submit"
-                disabled={saving}
+                disabled={saving || (!!duplicateWarning && !editingId)}
                 className="w-full py-3 rounded-xl font-body font-semibold text-sm transition-all hover:scale-[1.01] disabled:opacity-50 flex items-center justify-center gap-2 bg-primary text-primary-foreground shadow-lg"
               >
                 <Save className="w-4 h-4" />
@@ -490,7 +530,7 @@ const AdminPanel = () => {
                       <Edit2 className="w-3 h-3" /> {t('সম্পাদনা', 'Edit')}
                     </button>
                     <button
-                      onClick={() => setDeleteTarget({ id: item.id, name: item.name })}
+                      onClick={() => setDeleteTarget({ id: item.id, name: item.name, imageUrl: item.image_url || undefined })}
                       className="flex items-center justify-center gap-1 py-2 px-3 rounded-lg bg-destructive/10 text-destructive text-xs font-body hover:bg-destructive hover:text-destructive-foreground transition-colors"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -530,7 +570,7 @@ const AdminPanel = () => {
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={() => setDeleteTarget({ id: item.id, name: item.name })}
+                    onClick={() => setDeleteTarget({ id: item.id, name: item.name, imageUrl: item.image_url || undefined })}
                     className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

@@ -2,11 +2,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
 import { ArrowLeft, MapPin, Utensils, Heart } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { riceTypes, riceDishes, fishItems, type FoodItem } from '@/data/content';
+import type { FoodItem } from '@/data/content';
 import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import RealImage from '@/components/RealImage';
 
 const categoryEmoji: Record<string, string> = {
   'rice-type': '🌾',
@@ -18,16 +17,24 @@ const ItemDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
-  const { data: dbItems } = useItems();
+  const { data: dbItems, isLoading } = useItems();
 
   const allItems = useMemo(() => {
-    const staticItems: FoodItem[] = [...riceTypes, ...riceDishes, ...fishItems];
-    if (!dbItems || dbItems.length === 0) return staticItems;
-    const dynamicItems: FoodItem[] = dbItems.map(dbItemToFoodItem);
-    return [...dynamicItems, ...staticItems];
+    if (!dbItems) return [];
+    return dbItems.map(dbItemToFoodItem);
   }, [dbItems]);
 
   const item = allItems.find(i => i.id === id);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse font-heading text-xl text-muted-foreground">
+          {t('লোড হচ্ছে...', 'Loading...')}
+        </div>
+      </div>
+    );
+  }
 
   if (!item) {
     return (
@@ -43,8 +50,7 @@ const ItemDetail = () => {
     );
   }
 
-  // Check if this item has a direct image_url (from Supabase)
-  const hasDirectImage = item.image.startsWith('http');
+  const hasDirectImage = item.image && item.image.startsWith('http');
 
   const name = lang === 'bn' ? item.name : item.nameEn;
   const desc = lang === 'bn' ? (item.detailedDescription || item.description) : (item.detailedDescriptionEn || item.descriptionEn);
@@ -70,12 +76,9 @@ const ItemDetail = () => {
           {hasDirectImage ? (
             <img src={item.image} alt={name} className="w-full h-full object-cover" />
           ) : (
-            <RealImage
-              nameEn={item.nameEn}
-              category={item.category}
-              alt={name}
-              className="w-full h-full object-cover"
-            />
+            <div className="w-full h-full bg-secondary flex items-center justify-center">
+              <span className="text-6xl">{categoryEmoji[item.category] || '🍽️'}</span>
+            </div>
           )}
           <div className="absolute inset-0" style={{
             background: 'linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.4) 40%, transparent 70%)'
@@ -176,23 +179,20 @@ const ItemDetail = () => {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               {related.map((rel) => {
-                const relHasDirectImage = rel.image.startsWith('http');
+                const relHasDirectImage = rel.image && rel.image.startsWith('http');
                 return (
                   <button
                     key={rel.id}
                     onClick={() => { navigate(`/item/${rel.id}`); window.scrollTo({ top: 0 }); }}
                     className="glass-card group text-left overflow-hidden transition-all duration-300 hover:-translate-y-1"
                   >
-                    <div className="aspect-[4/3] overflow-hidden">
+                    <div className="aspect-[4/3] overflow-hidden bg-secondary">
                       {relHasDirectImage ? (
                         <img src={rel.image} alt={lang === 'bn' ? rel.name : rel.nameEn} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                       ) : (
-                        <RealImage
-                          nameEn={rel.nameEn}
-                          category={rel.category}
-                          alt={lang === 'bn' ? rel.name : rel.nameEn}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-3xl">{categoryEmoji[rel.category] || '🍽️'}</span>
+                        </div>
                       )}
                     </div>
                     <div className="p-3">

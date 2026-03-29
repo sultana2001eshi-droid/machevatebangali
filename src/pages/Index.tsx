@@ -8,23 +8,18 @@ import ImageGallery from '@/components/ImageGallery';
 import GamesSection from '@/components/GamesSection';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { riceTypes, riceDishes, fishItems, type FoodItem } from '@/data/content';
+import type { FoodItem } from '@/data/content';
 import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
 
 const Index = () => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
-  const { data: dbItems } = useItems();
+  const { data: dbItems, isLoading } = useItems();
 
-  // Merge: Supabase items first, then static fallback items (that don't have a DB version)
   const allItems = useMemo(() => {
-    const staticItems: FoodItem[] = [...riceTypes, ...riceDishes, ...fishItems];
-    if (!dbItems || dbItems.length === 0) return staticItems;
-
-    const dynamicItems: FoodItem[] = dbItems.map(dbItemToFoodItem);
-    // Static items serve as fallback when DB is empty
-    return [...dynamicItems, ...staticItems];
+    if (!dbItems) return [];
+    return dbItems.map(dbItemToFoodItem);
   }, [dbItems]);
 
   const filteredItems = useMemo(() => {
@@ -82,7 +77,15 @@ const Index = () => {
 
           <CategoryFilter activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
 
-          {riceTypeItems.length > 0 && (
+          {isLoading && (
+            <div className="text-center py-16">
+              <div className="animate-pulse font-heading text-lg text-muted-foreground">
+                {t('লোড হচ্ছে...', 'Loading...')}
+              </div>
+            </div>
+          )}
+
+          {!isLoading && riceTypeItems.length > 0 && (
             <div className="mb-20">
               <SectionTitle emoji="🌾">{t('বাংলাদেশের চাল', 'Rice Types of Bangladesh')}</SectionTitle>
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -91,7 +94,7 @@ const Index = () => {
             </div>
           )}
 
-          {riceDishItems.length > 0 && (
+          {!isLoading && riceDishItems.length > 0 && (
             <div className="mb-20">
               <SectionTitle emoji="🍚">{t('ভাতের পদ', 'Rice Dishes')}</SectionTitle>
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -100,7 +103,7 @@ const Index = () => {
             </div>
           )}
 
-          {fishList.length > 0 && (
+          {!isLoading && fishList.length > 0 && (
             <div>
               <SectionTitle emoji="🐟">{t('বাংলাদেশের মাছ', 'Fish of Bangladesh')}</SectionTitle>
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -109,7 +112,7 @@ const Index = () => {
             </div>
           )}
 
-          {filteredItems.length === 0 && (
+          {!isLoading && filteredItems.length === 0 && (
             <div className="text-center py-24">
               <p className="text-5xl mb-4">😔</p>
               <p className="text-xl font-heading text-muted-foreground">

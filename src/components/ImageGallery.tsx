@@ -1,25 +1,22 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
-import RealImage from '@/components/RealImage';
-
-const galleryImages = [
-  { labelEn: 'Hilsa Fish', label: 'ইলিশ', category: 'fish' },
-  { labelEn: 'Polao Rice', label: 'পোলাও', category: 'rice-dish' },
-  { labelEn: 'Prawn Curry', label: 'চিংড়ি', category: 'fish' },
-  { labelEn: 'Kalijira Rice', label: 'কালিজিরা চাল', category: 'rice-type' },
-  { labelEn: 'Rohu Fish', label: 'রুই', category: 'fish' },
-  { labelEn: 'Biryani Rice', label: 'বিরিয়ানি', category: 'rice-dish' },
-  { labelEn: 'Catla Fish', label: 'কাতলা', category: 'fish' },
-  { labelEn: 'Red Rice', label: 'লাল চাল', category: 'rice-type' },
-  { labelEn: 'Khichuri', label: 'খিচুড়ি', category: 'rice-dish' },
-  { labelEn: 'Koi Fish', label: 'কই', category: 'fish' },
-  { labelEn: 'Pomfret Fish', label: 'রূপচান্দা', category: 'fish' },
-  { labelEn: 'White Rice', label: 'সাদা ভাত', category: 'rice-dish' },
-];
+import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
+import { useMemo } from 'react';
 
 const ImageGallery = () => {
   const { lang, t } = useLanguage();
   const { ref, isVisible } = useScrollReveal<HTMLElement>(0.1);
+  const { data: dbItems } = useItems();
+
+  const galleryItems = useMemo(() => {
+    if (!dbItems) return [];
+    return dbItems
+      .filter(item => item.image_url)
+      .map(dbItemToFoodItem)
+      .slice(0, 12);
+  }, [dbItems]);
+
+  if (galleryItems.length === 0) return null;
 
   return (
     <section id="gallery" className="py-20 md:py-24 bg-secondary/30" ref={ref}>
@@ -33,21 +30,21 @@ const ImageGallery = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-          {galleryImages.map((img, i) => (
+          {galleryItems.map((item, i) => (
             <div
-              key={i}
+              key={item.id}
               className={`group relative aspect-square rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               style={{ transitionDelay: `${i * 0.05}s` }}
             >
-              <RealImage
-                nameEn={img.labelEn}
-                category={img.category}
-                alt={lang === 'bn' ? img.label : img.labelEn}
+              <img
+                src={item.image}
+                alt={lang === 'bn' ? item.name : item.nameEn}
+                loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                 <span className="font-heading text-lg font-bold" style={{ color: 'hsl(40, 33%, 96%)' }}>
-                  {lang === 'bn' ? img.label : img.labelEn}
+                  {lang === 'bn' ? item.name : item.nameEn}
                 </span>
               </div>
             </div>
