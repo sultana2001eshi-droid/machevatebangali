@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      hero_images: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          image_url: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url?: string
+        }
+        Relationships: []
+      }
       items: {
         Row: {
           category: string
