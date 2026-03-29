@@ -232,7 +232,7 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
           {/* Summary */}
           <div className="flex gap-3 mb-4 text-xs font-body">
             <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary">✓ {validCount} {t('বৈধ', 'valid')}</span>
-            {dupCount > 0 && <span className="px-2.5 py-1 rounded-full bg-yellow-500/10 text-yellow-600">⚠ {dupCount} {t('ডুপ্লিকেট', 'duplicate')}</span>}
+            {dupCount > 0 && <span className="px-2.5 py-1 rounded-full bg-accent/20 text-accent-foreground">⚠ {dupCount} {t('ডুপ্লিকেট', 'duplicate')}</span>}
             {errCount > 0 && <span className="px-2.5 py-1 rounded-full bg-destructive/10 text-destructive">✗ {errCount} {t('ত্রুটি', 'error')}</span>}
           </div>
 
