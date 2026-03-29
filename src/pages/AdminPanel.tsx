@@ -4,9 +4,10 @@ import { useAdmin } from '@/hooks/useAdmin';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2, LogOut, Image as ImageIcon, ArrowLeft, X, Save, LayoutGrid, List, Search, AlertTriangle, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Edit2, Trash2, LogOut, Image as ImageIcon, ArrowLeft, X, Save, LayoutGrid, List, Search, AlertTriangle, Loader2, ChevronDown, ChevronUp, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import type { DbItem } from '@/hooks/useItems';
+import BulkUpload from '@/components/admin/BulkUpload';
 import {
   AlertDialog,
   AlertDialogAction,
