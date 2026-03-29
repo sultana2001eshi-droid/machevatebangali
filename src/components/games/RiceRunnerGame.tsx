@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
 import type { FoodItem } from '@/data/content';
 import { X } from 'lucide-react';
+import Leaderboard from './Leaderboard';
 
 type GameState = 'start' | 'playing' | 'paused';
 

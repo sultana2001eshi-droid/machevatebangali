@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
 import type { FoodItem } from '@/data/content';
 import { X, RotateCcw } from 'lucide-react';
+import Leaderboard from './Leaderboard';
 
 type GameState = 'start' | 'playing' | 'complete';
 
@@ -170,8 +171,9 @@ const DiningTableGame = () => {
             {t(`${moves} চালে সম্পন্ন`, `Completed in ${moves} moves`)}
           </p>
           <p className="font-accent text-lg font-bold gold-accent mb-4">🏆 {score}</p>
+          <Leaderboard gameName="memory-match" currentScore={score} onClose={() => {}} />
           <button onClick={startGame}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body font-semibold text-sm hover:scale-105 transition-transform">
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-primary-foreground font-body font-semibold text-sm hover:scale-105 transition-transform mt-4">
             <RotateCcw className="w-4 h-4" /> {t('আবার খেলুন', 'Play Again')}
           </button>
         </div>
