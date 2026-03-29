@@ -93,6 +93,9 @@ const Navbar = ({ onSearch }: NavbarProps) => {
               <button onClick={() => handleNav('/terms')} className="block w-full text-left py-2.5 px-3 rounded-lg hover:bg-secondary transition-colors text-foreground">
                 {t('📜 শর্তাবলী', '📜 Terms & Conditions')}
               </button>
+              <button onClick={() => handleNav('/admin-login')} className="block w-full text-left py-2.5 px-3 rounded-lg hover:bg-secondary transition-colors text-foreground">
+                {t('🔐 অ্যাডমিন', '🔐 Admin')}
+              </button>
 
               <div className="border-t border-border/50 my-4" />
               <p className="text-sm text-muted-foreground font-accent uppercase tracking-wider px-3">{t('⚙️ সেটিংস', '⚙️ Settings')}</p>
