@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { riceDishes } from '@/data/content';
+import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
+import type { FoodItem } from '@/data/content';
 import { X } from 'lucide-react';
 
 const steamAnimation = `
@@ -13,7 +14,12 @@ const steamAnimation = `
 
 const DiningTableGame = () => {
   const { t } = useLanguage();
-  const [selectedDish, setSelectedDish] = useState<typeof riceDishes[0] | null>(null);
+  const { data: dbItems } = useItems();
+  const [selectedDish, setSelectedDish] = useState<FoodItem | null>(null);
+
+  const riceDishes = (dbItems || []).map(dbItemToFoodItem).filter(i => i.category === 'rice-dish');
+
+  if (riceDishes.length === 0) return null;
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-b from-accent/5 to-earth/5 p-6">
@@ -35,7 +41,6 @@ const DiningTableGame = () => {
               selectedDish?.id === dish.id ? '-translate-y-2 shadow-xl shadow-gold/20 ring-2 ring-gold/40' : ''
             }`}
           >
-            {/* Steam effect */}
             <div className="relative">
               <span className="text-4xl block">🍚</span>
               <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex gap-0.5">
@@ -43,10 +48,7 @@ const DiningTableGame = () => {
                   <span
                     key={i}
                     className="block w-1 h-3 rounded-full bg-muted-foreground/20"
-                    style={{
-                      animation: `steam 2s ease-in-out infinite`,
-                      animationDelay: `${i * 0.4}s`,
-                    }}
+                    style={{ animation: `steam 2s ease-in-out infinite`, animationDelay: `${i * 0.4}s` }}
                   />
                 ))}
               </div>
@@ -61,7 +63,6 @@ const DiningTableGame = () => {
         ))}
       </div>
 
-      {/* Info Popup */}
       {selectedDish && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setSelectedDish(null)}>
           <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" />
