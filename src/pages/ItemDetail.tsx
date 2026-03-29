@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { ArrowLeft, MapPin, Utensils, Heart } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { riceTypes, riceDishes, fishItems, type FoodItem } from '@/data/content';
+import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import RealImage from '@/components/RealImage';
@@ -17,8 +18,15 @@ const ItemDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
+  const { data: dbItems } = useItems();
 
-  const allItems = useMemo(() => [...riceTypes, ...riceDishes, ...fishItems], []);
+  const allItems = useMemo(() => {
+    const staticItems: FoodItem[] = [...riceTypes, ...riceDishes, ...fishItems];
+    if (!dbItems || dbItems.length === 0) return staticItems;
+    const dynamicItems: FoodItem[] = dbItems.map(dbItemToFoodItem);
+    return [...dynamicItems, ...staticItems];
+  }, [dbItems]);
+
   const item = allItems.find(i => i.id === id);
 
   if (!item) {
@@ -34,6 +42,9 @@ const ItemDetail = () => {
       </div>
     );
   }
+
+  // Check if this item has a direct image_url (from Supabase)
+  const hasDirectImage = item.image.startsWith('http');
 
   const name = lang === 'bn' ? item.name : item.nameEn;
   const desc = lang === 'bn' ? (item.detailedDescription || item.description) : (item.detailedDescriptionEn || item.descriptionEn);
@@ -56,17 +67,20 @@ const ItemDetail = () => {
       {/* Hero Image */}
       <div className="relative pt-16">
         <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-          <RealImage
-            nameEn={item.nameEn}
-            category={item.category}
-            alt={name}
-            className="w-full h-full object-cover"
-          />
+          {hasDirectImage ? (
+            <img src={item.image} alt={name} className="w-full h-full object-cover" />
+          ) : (
+            <RealImage
+              nameEn={item.nameEn}
+              category={item.category}
+              alt={name}
+              className="w-full h-full object-cover"
+            />
+          )}
           <div className="absolute inset-0" style={{
             background: 'linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.4) 40%, transparent 70%)'
           }} />
 
-          {/* Back button */}
           <button
             onClick={() => navigate(-1)}
             className="absolute top-4 left-4 z-10 flex items-center gap-2 px-4 py-2 rounded-full font-body text-sm font-medium backdrop-blur-xl border transition-all hover:scale-105"
@@ -80,7 +94,6 @@ const ItemDetail = () => {
             {t('ফিরে যান', 'Go Back')}
           </button>
 
-          {/* Category badge */}
           <div className="absolute bottom-8 left-0 right-0 px-6 md:px-8">
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-accent font-medium backdrop-blur-xl border mb-3"
               style={{
@@ -109,7 +122,6 @@ const ItemDetail = () => {
           <p className="font-body text-base md:text-lg text-muted-foreground leading-relaxed">{desc}</p>
         </div>
 
-        {/* Info Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-10">
           {origin && <InfoCard icon="📜" title={t('নামের উৎপত্তি', 'Name Origin')} content={origin} />}
           {taste && <InfoCard icon="👅" title={t('স্বাদ', 'Taste')} content={taste} />}
@@ -117,7 +129,6 @@ const ItemDetail = () => {
           {price && <InfoCard icon="💰" title={t('বাজার মূল্য', 'Market Price')} content={price} />}
         </div>
 
-        {/* Cultural Importance */}
         {cultural && (
           <div className="mb-10">
             <div className="flex items-center gap-2 mb-4">
@@ -132,7 +143,6 @@ const ItemDetail = () => {
           </div>
         )}
 
-        {/* Cooking Method */}
         {(cooking || (steps && steps.length > 0)) && (
           <div className="mb-10">
             <div className="flex items-center gap-2 mb-4">
@@ -159,37 +169,43 @@ const ItemDetail = () => {
           </div>
         )}
 
-        {/* Related Items */}
         {related.length > 0 && (
           <div className="mt-16">
             <h2 className="font-heading text-xl md:text-2xl font-bold text-foreground mb-6">
               {t('আরও দেখুন', 'Related Items')}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-              {related.map((rel) => (
-                <button
-                  key={rel.id}
-                  onClick={() => { navigate(`/item/${rel.id}`); window.scrollTo({ top: 0 }); }}
-                  className="glass-card group text-left overflow-hidden transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="aspect-[4/3] overflow-hidden">
-                    <RealImage
-                      nameEn={rel.nameEn}
-                      category={rel.category}
-                      alt={lang === 'bn' ? rel.name : rel.nameEn}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
-                  <div className="p-3">
-                    <p className="font-heading text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                      {lang === 'bn' ? rel.name : rel.nameEn}
-                    </p>
-                    <p className="font-body text-xs text-muted-foreground truncate">
-                      {lang === 'bn' ? rel.subCategory : rel.subCategoryEn}
-                    </p>
-                  </div>
-                </button>
-              ))}
+              {related.map((rel) => {
+                const relHasDirectImage = rel.image.startsWith('http');
+                return (
+                  <button
+                    key={rel.id}
+                    onClick={() => { navigate(`/item/${rel.id}`); window.scrollTo({ top: 0 }); }}
+                    className="glass-card group text-left overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                  >
+                    <div className="aspect-[4/3] overflow-hidden">
+                      {relHasDirectImage ? (
+                        <img src={rel.image} alt={lang === 'bn' ? rel.name : rel.nameEn} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                      ) : (
+                        <RealImage
+                          nameEn={rel.nameEn}
+                          category={rel.category}
+                          alt={lang === 'bn' ? rel.name : rel.nameEn}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="font-heading text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                        {lang === 'bn' ? rel.name : rel.nameEn}
+                      </p>
+                      <p className="font-body text-xs text-muted-foreground truncate">
+                        {lang === 'bn' ? rel.subCategory : rel.subCategoryEn}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

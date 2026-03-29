@@ -8,14 +8,24 @@ import ImageGallery from '@/components/ImageGallery';
 import GamesSection from '@/components/GamesSection';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { riceTypes, riceDishes, fishItems } from '@/data/content';
+import { riceTypes, riceDishes, fishItems, type FoodItem } from '@/data/content';
+import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
 
 const Index = () => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
+  const { data: dbItems } = useItems();
 
-  const allItems = useMemo(() => [...riceTypes, ...riceDishes, ...fishItems], []);
+  // Merge: Supabase items first, then static fallback items (that don't have a DB version)
+  const allItems = useMemo(() => {
+    const staticItems: FoodItem[] = [...riceTypes, ...riceDishes, ...fishItems];
+    if (!dbItems || dbItems.length === 0) return staticItems;
+
+    const dynamicItems: FoodItem[] = dbItems.map(dbItemToFoodItem);
+    // Static items serve as fallback when DB is empty
+    return [...dynamicItems, ...staticItems];
+  }, [dbItems]);
 
   const filteredItems = useMemo(() => {
     let items = allItems;
@@ -110,7 +120,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* About Section — Premium Story Style */}
+      {/* About Section */}
       <section id="about" className="py-20 md:py-24 bg-cream">
         <div className="container mx-auto px-4 md:px-6 max-w-4xl">
           <div className="text-center mb-12">
@@ -120,7 +130,6 @@ const Index = () => {
             <h2 className="section-heading text-3xl md:text-5xl">{t('আমাদের গল্প', 'Our Story')}</h2>
           </div>
 
-          {/* Story Block */}
           <div className="relative pl-6 md:pl-8 mb-12">
             <div className="absolute left-0 top-0 bottom-0 w-1 rounded-full bg-gradient-to-b from-gold via-primary to-gold/30" />
             <blockquote>
@@ -136,7 +145,6 @@ const Index = () => {
             </blockquote>
           </div>
 
-          {/* Creator Card */}
           <div className="glass-card p-6 md:p-8 max-w-lg mx-auto text-center border-gold/20">
             <img
               src={profileImg}
