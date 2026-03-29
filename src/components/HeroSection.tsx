@@ -15,9 +15,9 @@ const HeroSection = () => {
         width={1920}
         height={1080}
       />
-      {/* Multi-layer overlay — dark for readability */}
+      {/* Multi-layer overlay — strong dark for readability */}
       <div className="absolute inset-0" style={{
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.65) 40%, rgba(0,0,0,0.7) 60%, hsl(var(--background) / 0.98) 100%)'
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.8) 75%, hsl(var(--background) / 0.98) 100%)'
       }} />
       {/* Decorative gold line */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
