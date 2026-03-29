@@ -14,7 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      items: {
+        Row: {
+          category: string
+          cooking_method: string | null
+          cooking_method_en: string | null
+          cooking_steps: string[] | null
+          cooking_steps_en: string[] | null
+          created_at: string
+          cultural_importance: string | null
+          cultural_importance_en: string | null
+          description: string
+          description_en: string | null
+          detailed_description: string | null
+          detailed_description_en: string | null
+          id: string
+          image_url: string | null
+          location: string | null
+          location_en: string | null
+          name: string
+          name_en: string | null
+          nutrition: string | null
+          nutrition_en: string | null
+          origin: string | null
+          origin_en: string | null
+          price: string | null
+          price_en: string | null
+          subcategory: string | null
+          subcategory_en: string | null
+          taste: string | null
+          taste_en: string | null
+        }
+        Insert: {
+          category: string
+          cooking_method?: string | null
+          cooking_method_en?: string | null
+          cooking_steps?: string[] | null
+          cooking_steps_en?: string[] | null
+          created_at?: string
+          cultural_importance?: string | null
+          cultural_importance_en?: string | null
+          description: string
+          description_en?: string | null
+          detailed_description?: string | null
+          detailed_description_en?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          location_en?: string | null
+          name: string
+          name_en?: string | null
+          nutrition?: string | null
+          nutrition_en?: string | null
+          origin?: string | null
+          origin_en?: string | null
+          price?: string | null
+          price_en?: string | null
+          subcategory?: string | null
+          subcategory_en?: string | null
+          taste?: string | null
+          taste_en?: string | null
+        }
+        Update: {
+          category?: string
+          cooking_method?: string | null
+          cooking_method_en?: string | null
+          cooking_steps?: string[] | null
+          cooking_steps_en?: string[] | null
+          created_at?: string
+          cultural_importance?: string | null
+          cultural_importance_en?: string | null
+          description?: string
+          description_en?: string | null
+          detailed_description?: string | null
+          detailed_description_en?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          location_en?: string | null
+          name?: string
+          name_en?: string | null
+          nutrition?: string | null
+          nutrition_en?: string | null
+          origin?: string | null
+          origin_en?: string | null
+          price?: string | null
+          price_en?: string | null
+          subcategory?: string | null
+          subcategory_en?: string | null
+          taste?: string | null
+          taste_en?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
