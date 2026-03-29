@@ -432,7 +432,35 @@ const AdminPanel = () => {
           })}
         </div>
 
-        {/* ── Toolbar ── */}
+        {/* ── Hero Image Manager ── */}
+        <div className="mb-6">
+          <button onClick={() => setShowHeroManager(!showHeroManager)}
+            className="inline-flex items-center gap-2 text-sm font-body font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <ImageIcon className="w-4 h-4" /> {t('হিরো ইমেজ পরিচালনা', 'Manage Hero Images')}
+            {showHeroManager ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
+          {showHeroManager && (
+            <div className="glass-card p-4 mt-3">
+              <div className="flex flex-wrap gap-3 mb-3">
+                {heroImages.map(h => (
+                  <div key={h.id} className="relative w-28 h-20 rounded-xl overflow-hidden group">
+                    <img src={h.image_url} alt="Hero" className="w-full h-full object-cover" />
+                    <button onClick={() => deleteHeroImage(h.id, h.image_url)}
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                      <X className="w-3 h-3" />
+                    </button>
+                    <span className="absolute bottom-1 left-1 text-[9px] bg-black/60 text-white px-1 rounded">{h.display_order}</span>
+                  </div>
+                ))}
+              </div>
+              <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-foreground text-xs font-body hover:bg-accent transition-colors">
+                <Plus className="w-3 h-3" /> {t('হিরো ইমেজ যোগ করুন', 'Add Hero Image')}
+                <input type="file" accept="image/*" onChange={handleHeroUpload} className="hidden" />
+              </label>
+            </div>
+          )}
+        </div>
+
         <div className="flex flex-wrap items-center gap-3 mb-6">
           {!showForm && (
             <button onClick={() => { resetForm(); setShowForm(true); }}
