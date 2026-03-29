@@ -1,17 +1,21 @@
 import { useState, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { fishItems } from '@/data/content';
+import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
+import type { FoodItem } from '@/data/content';
 import { X } from 'lucide-react';
 
 const FishingGame = () => {
   const { t } = useLanguage();
+  const { data: dbItems } = useItems();
   const [hookDropped, setHookDropped] = useState(false);
-  const [caughtFish, setCaughtFish] = useState<typeof fishItems[0] | null>(null);
+  const [caughtFish, setCaughtFish] = useState<FoodItem | null>(null);
   const [catchCount, setCatchCount] = useState(0);
   const [ripple, setRipple] = useState(false);
 
+  const fishItems = (dbItems || []).map(dbItemToFoodItem).filter(i => i.category === 'fish');
+
   const handleCast = useCallback(() => {
-    if (hookDropped || caughtFish) return;
+    if (hookDropped || caughtFish || fishItems.length === 0) return;
     setHookDropped(true);
     setRipple(true);
 
@@ -22,31 +26,24 @@ const FishingGame = () => {
       setHookDropped(false);
       setTimeout(() => setRipple(false), 600);
     }, 1500);
-  }, [hookDropped, caughtFish]);
+  }, [hookDropped, caughtFish, fishItems]);
 
-  const handleClose = () => {
-    setCaughtFish(null);
-  };
+  if (fishItems.length === 0) return null;
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border/50 min-h-[360px]">
-      {/* Sky */}
       <div className="absolute inset-0 h-1/2" style={{ background: 'linear-gradient(to bottom, hsl(var(--primary) / 0.08), transparent)' }} />
-      
-      {/* Water */}
       <div className="absolute bottom-0 left-0 right-0 h-[55%]" style={{ background: 'linear-gradient(to bottom, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.3))' }}>
         <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-primary/20 to-transparent" 
              style={{ animation: 'waveMove 3s ease-in-out infinite' }} />
       </div>
 
-      {/* Ripple effect */}
       {ripple && (
         <div className="absolute left-1/2 top-[45%] -translate-x-1/2 z-10">
           <div className="w-16 h-4 rounded-full border-2 border-primary/30 animate-ping" />
         </div>
       )}
 
-      {/* Swimming fish */}
       <div className="absolute bottom-0 left-0 right-0 h-[55%] overflow-hidden">
         {fishItems.slice(0, 6).map((fish, i) => (
           <div
@@ -64,7 +61,6 @@ const FishingGame = () => {
         ))}
       </div>
 
-      {/* Hook */}
       <div className="absolute left-1/2 -translate-x-1/2 top-4 z-10 flex flex-col items-center">
         <div className="w-0.5 bg-muted-foreground/40" style={{
           height: hookDropped ? '160px' : '60px',
@@ -76,7 +72,6 @@ const FishingGame = () => {
         }}>🪝</span>
       </div>
 
-      {/* Content overlay */}
       <div className="relative z-10 p-6">
         <h3 className="font-heading text-xl font-bold text-foreground mb-2 flex items-center gap-2">
           <span className="text-2xl">🎣</span> {t('মাছ ধরুন', 'Catch a Fish')}
@@ -91,7 +86,6 @@ const FishingGame = () => {
         )}
       </div>
 
-      {/* Tap area */}
       {!caughtFish && (
         <button
           onClick={handleCast}
@@ -101,12 +95,11 @@ const FishingGame = () => {
         />
       )}
 
-      {/* Caught fish popup */}
       {caughtFish && (
         <div className="absolute inset-0 z-20 flex items-center justify-center p-4 animate-fade-in">
-          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm" onClick={handleClose} />
+          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm" onClick={() => setCaughtFish(null)} />
           <div className="glass-card relative z-10 max-w-sm w-full p-5 border border-gold/30 shadow-2xl animate-scale-in">
-            <button onClick={handleClose} className="absolute top-3 right-3 p-1 rounded-lg hover:bg-secondary transition-colors">
+            <button onClick={() => setCaughtFish(null)} className="absolute top-3 right-3 p-1 rounded-lg hover:bg-secondary transition-colors">
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
             <div className="text-center mb-3">
@@ -122,14 +115,14 @@ const FishingGame = () => {
             </p>
             <div className="flex gap-2 justify-center">
               <button
-                onClick={handleClose}
+                onClick={() => setCaughtFish(null)}
                 className="px-3 py-2 rounded-lg bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
               >
                 {t('আবার ধরুন 🎣', 'Try Again 🎣')}
               </button>
               <a
                 href="#explore"
-                onClick={handleClose}
+                onClick={() => setCaughtFish(null)}
                 className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
               >
                 {t('বিস্তারিত →', 'Details →')}

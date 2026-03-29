@@ -1,15 +1,19 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { riceTypes } from '@/data/content';
+import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
+import type { FoodItem } from '@/data/content';
 import { X } from 'lucide-react';
 
 const RiceRunnerGame = () => {
   const { t } = useLanguage();
-  const [selectedRice, setSelectedRice] = useState<typeof riceTypes[0] | null>(null);
+  const { data: dbItems } = useItems();
+  const [selectedRice, setSelectedRice] = useState<FoodItem | null>(null);
   const [paused, setPaused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleSelect = (rice: typeof riceTypes[0]) => {
+  const riceTypes = (dbItems || []).map(dbItemToFoodItem).filter(i => i.category === 'rice-type');
+
+  const handleSelect = (rice: FoodItem) => {
     setSelectedRice(rice);
     setPaused(true);
   };
@@ -18,6 +22,8 @@ const RiceRunnerGame = () => {
     setSelectedRice(null);
     setPaused(false);
   };
+
+  if (riceTypes.length === 0) return null;
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-b from-primary/5 to-accent/5 p-6 min-h-[320px]">
@@ -54,7 +60,6 @@ const RiceRunnerGame = () => {
         ))}
       </div>
 
-      {/* Popup */}
       {selectedRice && (
         <div className="absolute inset-0 z-20 flex items-center justify-center p-4 animate-fade-in">
           <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={handleClose} />

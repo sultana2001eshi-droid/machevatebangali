@@ -3,13 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MapPin, ImageIcon } from 'lucide-react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
-import RealImage from '@/components/RealImage';
 import type { FoodItem } from '@/data/content';
 
 interface FoodCardProps {
   item: FoodItem;
   index: number;
 }
+
+const categoryEmoji: Record<string, string> = {
+  'rice-type': '🌾',
+  'rice-dish': '🍚',
+  'fish': '🐟',
+};
 
 const FoodCard = ({ item, index }: FoodCardProps) => {
   const navigate = useNavigate();
@@ -24,7 +29,6 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
   const cooking = lang === 'bn' ? item.cookingMethod : item.cookingMethodEn;
   const region = lang === 'bn' ? item.region : item.regionEn;
 
-  // Check if item has a direct URL (from Supabase storage)
   const hasDirectImage = item.image && item.image.startsWith('http');
 
   return (
@@ -35,7 +39,7 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
       onClick={() => setExpanded(!expanded)}
     >
       {/* Image */}
-      <div className="relative overflow-hidden aspect-[4/3]">
+      <div className="relative overflow-hidden aspect-[4/3] bg-secondary">
         {hasDirectImage ? (
           <img
             src={item.image}
@@ -47,12 +51,9 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
             }}
           />
         ) : (
-          <RealImage
-            nameEn={item.nameEn}
-            category={item.category}
-            alt={name}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-          />
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-4xl">{categoryEmoji[item.category] || '🍽️'}</span>
+          </div>
         )}
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 via-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
