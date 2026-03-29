@@ -127,6 +127,7 @@ const AdminPanel = () => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [heroImages, setHeroImages] = useState<{ id: string; image_url: string; display_order: number }[]>([]);
   const [showHeroManager, setShowHeroManager] = useState(false);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
 
   // Debounce ref for auto-translate
   const translateTimer = useRef<ReturnType<typeof setTimeout>>();
