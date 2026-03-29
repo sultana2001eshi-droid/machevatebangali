@@ -139,10 +139,8 @@ const RiceRunnerGame = () => {
                 {selectedRice.region && <span className="text-xs text-muted-foreground font-body">{t(selectedRice.region, selectedRice.regionEn || '')}</span>}
               </div>
             </div>
-            <p className="text-sm text-muted-foreground font-body leading-relaxed mb-4 line-clamp-3">
-              {t(selectedRice.description, selectedRice.descriptionEn)}
-            </p>
-            <div className="flex gap-2">
+            <Leaderboard gameName="rice-runner" currentScore={score} onClose={handleClose} />
+            <div className="flex gap-2 mt-3">
               <button onClick={handleClose} className="flex-1 px-3 py-2 rounded-lg bg-secondary text-sm font-medium transition-colors">
                 {t('চালিয়ে যান 🌾', 'Continue 🌾')}
               </button>
