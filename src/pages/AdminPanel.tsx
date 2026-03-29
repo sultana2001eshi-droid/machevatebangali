@@ -124,6 +124,8 @@ const AdminPanel = () => {
   const [duplicateWarning, setDuplicateWarning] = useState('');
   const [showEnglish, setShowEnglish] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [heroImages, setHeroImages] = useState<{ id: string; image_url: string; display_order: number }[]>([]);
+  const [showHeroManager, setShowHeroManager] = useState(false);
 
   // Debounce ref for auto-translate
   const translateTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -134,7 +136,39 @@ const AdminPanel = () => {
     if (!authLoading && user && !isAdmin) { signOut(); navigate('/admin-login'); }
   }, [authLoading, user, isAdmin]);
 
-  useEffect(() => { if (isAdmin) loadItems(); }, [isAdmin]);
+  useEffect(() => { if (isAdmin) { loadItems(); loadHeroImages(); } }, [isAdmin]);
+
+  const loadHeroImages = async () => {
+    const { data } = await supabase.from('hero_images').select('*').order('display_order', { ascending: true });
+    setHeroImages((data || []) as any[]);
+  };
+
+  const handleHeroUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const ext = file.name.split('.').pop();
+      const fileName = `hero-${Date.now()}.${ext}`;
+      const { error: uploadErr } = await supabase.storage.from('images').upload(fileName, file, { cacheControl: '3600' });
+      if (uploadErr) throw uploadErr;
+      const url = supabase.storage.from('images').getPublicUrl(fileName).data.publicUrl;
+      const maxOrder = heroImages.reduce((m, h) => Math.max(m, h.display_order), 0);
+      const { error } = await supabase.from('hero_images').insert({ image_url: url, display_order: maxOrder + 1 });
+      if (error) throw error;
+      toast.success(t('হিরো ইমেজ যোগ হয়েছে', 'Hero image added'));
+      loadHeroImages();
+    } catch (err: any) { toast.error(err.message); }
+  };
+
+  const deleteHeroImage = async (id: string, url: string) => {
+    try {
+      const parts = url.split('/images/');
+      if (parts.length >= 2) await supabase.storage.from('images').remove([parts[1]]);
+      await supabase.from('hero_images').delete().eq('id', id);
+      toast.success(t('হিরো ইমেজ মুছে ফেলা হয়েছে', 'Hero image deleted'));
+      loadHeroImages();
+    } catch (err: any) { toast.error(err.message); }
+  };
 
   // ─── Subcategory_en sync ──────────────────────────────────
   useEffect(() => {
