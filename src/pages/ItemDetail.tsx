@@ -1,56 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
-import { ArrowLeft, MapPin, Utensils, Heart, Leaf, DollarSign } from 'lucide-react';
+import { ArrowLeft, MapPin, Utensils, Heart } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { riceTypes, riceDishes, fishItems, type FoodItem } from '@/data/content';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-
-// Import all images
-import miniketRice from '@/assets/miniket-rice.jpg';
-import nazirshailRice from '@/assets/nazirshail-rice.jpg';
-import kalijiraRice from '@/assets/kalijira-rice.jpg';
-import chiniguraRice from '@/assets/chinigura-rice.jpg';
-import kataribhogRice from '@/assets/kataribhog-rice.jpg';
-import lalChal from '@/assets/lal-chal.jpg';
-import siddhaChal from '@/assets/siddha-chal.jpg';
-import motaChal from '@/assets/mota-chal.jpg';
-import atopChal from '@/assets/atop-chal.jpg';
-import basmatIChal from '@/assets/basmati-chal.jpg';
-import whiteRice from '@/assets/white-rice.jpg';
-import polao from '@/assets/polao.jpg';
-import khichuri from '@/assets/khichuri.jpg';
-import biryani from '@/assets/biryani.jpg';
-import lalBhaat from '@/assets/lal-bhaat.jpg';
-import basmatiBhaat from '@/assets/basmati-bhaat.jpg';
-import ilish from '@/assets/ilish.jpg';
-import rui from '@/assets/rui.jpg';
-import katla from '@/assets/katla.jpg';
-import pabda from '@/assets/pabda.jpg';
-import boal from '@/assets/boal.jpg';
-import chingri from '@/assets/chingri.jpg';
-import shing from '@/assets/shing.jpg';
-import magur from '@/assets/magur.jpg';
-import pangash from '@/assets/pangash.jpg';
-import koi from '@/assets/koi.jpg';
-import shol from '@/assets/shol.jpg';
-import ayre from '@/assets/ayre.jpg';
-import tilapia from '@/assets/tilapia.jpg';
-import rupchanda from '@/assets/rupchanda.jpg';
-import puti from '@/assets/puti.jpg';
-import tengra from '@/assets/tengra.jpg';
-
-const imageMap: Record<string, string> = {
-  'miniket-rice': miniketRice, 'nazirshail-rice': nazirshailRice,
-  'kalijira-rice': kalijiraRice, 'chinigura-rice': chiniguraRice,
-  'kataribhog-rice': kataribhogRice, 'lal-chal': lalChal,
-  'siddha-chal': siddhaChal, 'mota-chal': motaChal,
-  'atop-chal': atopChal, 'basmati-chal': basmatIChal,
-  'white-rice': whiteRice, polao, khichuri, biryani,
-  'lal-bhaat': lalBhaat, 'basmati-bhaat': basmatiBhaat,
-  ilish, rui, katla, pabda, boal, chingri, shing, magur,
-  pangash, koi, shol, ayre, tilapia, rupchanda, puti, tengra,
-};
+import RealImage from '@/components/RealImage';
 
 const categoryEmoji: Record<string, string> = {
   'rice-type': '🌾',
@@ -92,7 +47,6 @@ const ItemDetail = () => {
   const price = lang === 'bn' ? item.price : item.priceEn;
   const origin = lang === 'bn' ? item.origin : item.originEn;
 
-  // Find related items (same category, different id)
   const related = allItems.filter(i => i.category === item.category && i.id !== item.id).slice(0, 4);
 
   return (
@@ -102,8 +56,9 @@ const ItemDetail = () => {
       {/* Hero Image */}
       <div className="relative pt-16">
         <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-          <img
-            src={imageMap[item.image] || whiteRice}
+          <RealImage
+            nameEn={item.nameEn}
+            category={item.category}
             alt={name}
             className="w-full h-full object-cover"
           />
@@ -150,50 +105,16 @@ const ItemDetail = () => {
 
       {/* Content */}
       <div className="container mx-auto px-4 md:px-6 max-w-4xl py-10 md:py-16">
-        {/* Description */}
         <div className="mb-10">
-          <p className="font-body text-base md:text-lg text-muted-foreground leading-relaxed">
-            {desc}
-          </p>
+          <p className="font-body text-base md:text-lg text-muted-foreground leading-relaxed">{desc}</p>
         </div>
 
         {/* Info Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-10">
-          {/* Origin */}
-          {origin && (
-            <InfoCard
-              icon="📜"
-              title={t('নামের উৎপত্তি', 'Name Origin')}
-              content={origin}
-            />
-          )}
-
-          {/* Taste */}
-          {taste && (
-            <InfoCard
-              icon="👅"
-              title={t('স্বাদ', 'Taste')}
-              content={taste}
-            />
-          )}
-
-          {/* Nutrition */}
-          {nutrition && (
-            <InfoCard
-              icon="🥗"
-              title={t('পুষ্টিগুণ', 'Nutrition')}
-              content={nutrition}
-            />
-          )}
-
-          {/* Price */}
-          {price && (
-            <InfoCard
-              icon="💰"
-              title={t('বাজার মূল্য', 'Market Price')}
-              content={price}
-            />
-          )}
+          {origin && <InfoCard icon="📜" title={t('নামের উৎপত্তি', 'Name Origin')} content={origin} />}
+          {taste && <InfoCard icon="👅" title={t('স্বাদ', 'Taste')} content={taste} />}
+          {nutrition && <InfoCard icon="🥗" title={t('পুষ্টিগুণ', 'Nutrition')} content={nutrition} />}
+          {price && <InfoCard icon="💰" title={t('বাজার মূল্য', 'Market Price')} content={price} />}
         </div>
 
         {/* Cultural Importance */}
@@ -206,9 +127,7 @@ const ItemDetail = () => {
               </h2>
             </div>
             <div className="relative pl-6 border-l-2 border-gold/30">
-              <p className="font-body text-base text-muted-foreground leading-relaxed italic">
-                {cultural}
-              </p>
+              <p className="font-body text-base text-muted-foreground leading-relaxed italic">{cultural}</p>
             </div>
           </div>
         )}
@@ -222,23 +141,16 @@ const ItemDetail = () => {
                 {t('রান্নার পদ্ধতি', 'Cooking Method')}
               </h2>
             </div>
-
             {cooking && !steps && (
               <p className="font-body text-base text-muted-foreground leading-relaxed mb-4">{cooking}</p>
             )}
-
             {steps && steps.length > 0 && (
               <div className="space-y-3">
                 {steps.map((step, i) => (
                   <div key={i} className="flex gap-4 items-start glass-card p-4 border-gold/10">
                     <span className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-heading font-bold text-sm"
-                      style={{
-                        background: 'hsl(var(--gold) / 0.15)',
-                        color: 'hsl(var(--gold))',
-                      }}
-                    >
-                      {i + 1}
-                    </span>
+                      style={{ background: 'hsl(var(--gold) / 0.15)', color: 'hsl(var(--gold))' }}
+                    >{i + 1}</span>
                     <p className="font-body text-sm md:text-base text-muted-foreground leading-relaxed pt-1">{step}</p>
                   </div>
                 ))}
@@ -261,10 +173,10 @@ const ItemDetail = () => {
                   className="glass-card group text-left overflow-hidden transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="aspect-[4/3] overflow-hidden">
-                    <img
-                      src={imageMap[rel.image] || whiteRice}
+                    <RealImage
+                      nameEn={rel.nameEn}
+                      category={rel.category}
                       alt={lang === 'bn' ? rel.name : rel.nameEn}
-                      loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>

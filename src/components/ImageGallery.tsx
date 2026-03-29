@@ -1,31 +1,20 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
-import ilish from '@/assets/ilish.jpg';
-import polao from '@/assets/polao.jpg';
-import chingri from '@/assets/chingri.jpg';
-import khichuri from '@/assets/khichuri.jpg';
-import rui from '@/assets/rui.jpg';
-import biryani from '@/assets/biryani.jpg';
-import katla from '@/assets/katla.jpg';
-import whiteRice from '@/assets/white-rice.jpg';
-import kalijiraRice from '@/assets/kalijira-rice.jpg';
-import lalChal from '@/assets/lal-chal.jpg';
-import koi from '@/assets/koi.jpg';
-import rupchanda from '@/assets/rupchanda.jpg';
+import RealImage from '@/components/RealImage';
 
 const galleryImages = [
-  { src: ilish, label: 'ইলিশ', labelEn: 'Hilsa' },
-  { src: polao, label: 'পোলাও', labelEn: 'Polao' },
-  { src: chingri, label: 'চিংড়ি', labelEn: 'Prawn' },
-  { src: kalijiraRice, label: 'কালিজিরা চাল', labelEn: 'Kalijira Rice' },
-  { src: rui, label: 'রুই', labelEn: 'Rohu' },
-  { src: biryani, label: 'বিরিয়ানি', labelEn: 'Biryani' },
-  { src: katla, label: 'কাতলা', labelEn: 'Catla' },
-  { src: lalChal, label: 'লাল চাল', labelEn: 'Red Rice' },
-  { src: khichuri, label: 'খিচুড়ি', labelEn: 'Khichuri' },
-  { src: koi, label: 'কই', labelEn: 'Koi' },
-  { src: rupchanda, label: 'রূপচান্দা', labelEn: 'Pomfret' },
-  { src: whiteRice, label: 'সাদা ভাত', labelEn: 'White Rice' },
+  { labelEn: 'Hilsa Fish', label: 'ইলিশ', category: 'fish' },
+  { labelEn: 'Polao Rice', label: 'পোলাও', category: 'rice-dish' },
+  { labelEn: 'Prawn Curry', label: 'চিংড়ি', category: 'fish' },
+  { labelEn: 'Kalijira Rice', label: 'কালিজিরা চাল', category: 'rice-type' },
+  { labelEn: 'Rohu Fish', label: 'রুই', category: 'fish' },
+  { labelEn: 'Biryani Rice', label: 'বিরিয়ানি', category: 'rice-dish' },
+  { labelEn: 'Catla Fish', label: 'কাতলা', category: 'fish' },
+  { labelEn: 'Red Rice', label: 'লাল চাল', category: 'rice-type' },
+  { labelEn: 'Khichuri', label: 'খিচুড়ি', category: 'rice-dish' },
+  { labelEn: 'Koi Fish', label: 'কই', category: 'fish' },
+  { labelEn: 'Pomfret Fish', label: 'রূপচান্দা', category: 'fish' },
+  { labelEn: 'White Rice', label: 'সাদা ভাত', category: 'rice-dish' },
 ];
 
 const ImageGallery = () => {
@@ -50,10 +39,10 @@ const ImageGallery = () => {
               className={`group relative aspect-square rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               style={{ transitionDelay: `${i * 0.05}s` }}
             >
-              <img
-                src={img.src}
+              <RealImage
+                nameEn={img.labelEn}
+                category={img.category}
                 alt={lang === 'bn' ? img.label : img.labelEn}
-                loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">

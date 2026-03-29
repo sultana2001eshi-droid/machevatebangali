@@ -3,57 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MapPin } from 'lucide-react';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+import RealImage from '@/components/RealImage';
 import type { FoodItem } from '@/data/content';
-
-// Image imports — rice types
-import miniketRice from '@/assets/miniket-rice.jpg';
-import nazirshailRice from '@/assets/nazirshail-rice.jpg';
-import kalijiraRice from '@/assets/kalijira-rice.jpg';
-import chiniguraRice from '@/assets/chinigura-rice.jpg';
-import kataribhogRice from '@/assets/kataribhog-rice.jpg';
-import lalChal from '@/assets/lal-chal.jpg';
-import siddhaChal from '@/assets/siddha-chal.jpg';
-import motaChal from '@/assets/mota-chal.jpg';
-import atopChal from '@/assets/atop-chal.jpg';
-import basmatIChal from '@/assets/basmati-chal.jpg';
-
-// Image imports — rice dishes
-import whiteRice from '@/assets/white-rice.jpg';
-import polao from '@/assets/polao.jpg';
-import khichuri from '@/assets/khichuri.jpg';
-import biryani from '@/assets/biryani.jpg';
-import lalBhaat from '@/assets/lal-bhaat.jpg';
-import basmatiBhaat from '@/assets/basmati-bhaat.jpg';
-
-// Image imports — fish
-import ilish from '@/assets/ilish.jpg';
-import rui from '@/assets/rui.jpg';
-import katla from '@/assets/katla.jpg';
-import pabda from '@/assets/pabda.jpg';
-import boal from '@/assets/boal.jpg';
-import chingri from '@/assets/chingri.jpg';
-import shing from '@/assets/shing.jpg';
-import magur from '@/assets/magur.jpg';
-import pangash from '@/assets/pangash.jpg';
-import koi from '@/assets/koi.jpg';
-import shol from '@/assets/shol.jpg';
-import ayre from '@/assets/ayre.jpg';
-import tilapia from '@/assets/tilapia.jpg';
-import rupchanda from '@/assets/rupchanda.jpg';
-import puti from '@/assets/puti.jpg';
-import tengra from '@/assets/tengra.jpg';
-
-const imageMap: Record<string, string> = {
-  'miniket-rice': miniketRice, 'nazirshail-rice': nazirshailRice,
-  'kalijira-rice': kalijiraRice, 'chinigura-rice': chiniguraRice,
-  'kataribhog-rice': kataribhogRice, 'lal-chal': lalChal,
-  'siddha-chal': siddhaChal, 'mota-chal': motaChal,
-  'atop-chal': atopChal, 'basmati-chal': basmatIChal,
-  'white-rice': whiteRice, polao, khichuri, biryani,
-  'lal-bhaat': lalBhaat, 'basmati-bhaat': basmatiBhaat,
-  ilish, rui, katla, pabda, boal, chingri, shing, magur,
-  pangash, koi, shol, ayre, tilapia, rupchanda, puti, tengra,
-};
 
 interface FoodCardProps {
   item: FoodItem;
@@ -82,10 +33,10 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
     >
       {/* Image */}
       <div className="relative overflow-hidden aspect-[4/3]">
-        <img
-          src={imageMap[item.image] || whiteRice}
+        <RealImage
+          nameEn={item.nameEn}
+          category={item.category}
           alt={name}
-          loading="lazy"
           className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
         {/* Gradient overlay */}
