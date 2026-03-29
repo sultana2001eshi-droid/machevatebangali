@@ -11,10 +11,26 @@ interface BulkItem {
   category: string;
   region?: string;
   image_url?: string;
+  detailed_description?: string;
+  nutrition?: string;
+  taste?: string;
+  price?: string;
+  cooking_method?: string;
+  cultural_importance?: string;
+  subcategory?: string;
+  origin?: string;
   // generated
   name_en?: string;
   description_en?: string;
   location_en?: string;
+  detailed_description_en?: string;
+  nutrition_en?: string;
+  taste_en?: string;
+  price_en?: string;
+  cooking_method_en?: string;
+  cultural_importance_en?: string;
+  subcategory_en?: string;
+  origin_en?: string;
   // status
   _status?: 'valid' | 'duplicate' | 'error';
   _error?: string;
@@ -27,13 +43,30 @@ const CATEGORY_MAP: Record<string, string> = {
   'মাছ': 'fish', 'fish': 'fish',
 };
 
+// Field aliases: CSV/JSON key → internal field
+const FIELD_ALIASES: Record<string, string> = {
+  name: 'name', name_bn: 'name', 'নাম': 'name',
+  description: 'description', description_bn: 'description', 'বিবরণ': 'description',
+  details_bn: 'detailed_description', detailed_description: 'detailed_description', 'বিস্তারিত': 'detailed_description',
+  category: 'category', 'ক্যাটাগরি': 'category',
+  subcategory: 'subcategory', 'উপক্যাটাগরি': 'subcategory',
+  region: 'region', 'অঞ্চল': 'region',
+  nutrition: 'nutrition', 'পুষ্টি': 'nutrition',
+  taste: 'taste', 'স্বাদ': 'taste',
+  price: 'price', 'দাম': 'price',
+  cooking: 'cooking_method', cooking_method: 'cooking_method', 'রান্না': 'cooking_method',
+  culture: 'cultural_importance', cultural_importance: 'cultural_importance', 'সংস্কৃতি': 'cultural_importance',
+  origin: 'origin', 'উৎপত্তি': 'origin',
+  image_url: 'image_url', 'ছবি': 'image_url',
+};
+
 interface BulkUploadProps {
   existingNames: string[];
   onComplete: () => void;
 }
 
 async function translateText(text: string): Promise<string> {
-  if (!text.trim()) return '';
+  if (!text?.trim()) return '';
   try {
     const { data, error } = await supabase.functions.invoke('translate', {
       body: { text, source: 'bn', target: 'en' },
@@ -41,6 +74,38 @@ async function translateText(text: string): Promise<string> {
     if (error) throw error;
     return data?.translated || '';
   } catch { return ''; }
+}
+
+function mapRawToItem(raw: Record<string, string>): BulkItem {
+  const mapped: Record<string, string> = {};
+  for (const [key, value] of Object.entries(raw)) {
+    const normalizedKey = key.toLowerCase().trim().replace(/['"]/g, '');
+    const field = FIELD_ALIASES[normalizedKey];
+    if (field && value?.trim()) {
+      mapped[field] = value.trim();
+    } else if (!field && value?.trim()) {
+      // Store unknown fields by their original key (best effort)
+      mapped[normalizedKey] = value.trim();
+    }
+  }
+
+  const category = mapped.category ? (CATEGORY_MAP[mapped.category.toLowerCase().trim()] || CATEGORY_MAP[mapped.category.trim()] || '') : '';
+
+  return {
+    name: mapped.name || '',
+    description: mapped.description || '',
+    category,
+    region: mapped.region || '',
+    image_url: mapped.image_url || '',
+    detailed_description: mapped.detailed_description || '',
+    nutrition: mapped.nutrition || '',
+    taste: mapped.taste || '',
+    price: mapped.price || '',
+    cooking_method: mapped.cooking_method || '',
+    cultural_importance: mapped.cultural_importance || '',
+    subcategory: mapped.subcategory || '',
+    origin: mapped.origin || '',
+  };
 }
 
 const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
@@ -51,18 +116,12 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
   const [progress, setProgress] = useState(0);
   const [translating, setTranslating] = useState(false);
 
-  const normalizeCategory = (raw: string): string => {
-    const lower = raw.toLowerCase().trim();
-    return CATEGORY_MAP[lower] || CATEGORY_MAP[raw.trim()] || '';
-  };
-
   const parseCSV = (text: string): BulkItem[] => {
     const lines = text.trim().split('\n');
     if (lines.length < 2) return [];
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g, ''));
+    const headers = lines[0].split(',').map(h => h.trim().replace(/['"]/g, ''));
 
     return lines.slice(1).map(line => {
-      // Simple CSV parser handling quoted fields
       const values: string[] = [];
       let current = '';
       let inQuotes = false;
@@ -73,16 +132,9 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
       }
       values.push(current.trim());
 
-      const obj: any = {};
-      headers.forEach((h, i) => { obj[h] = values[i] || ''; });
-
-      return {
-        name: obj.name || obj['নাম'] || '',
-        description: obj.description || obj['বিবরণ'] || '',
-        category: normalizeCategory(obj.category || obj['ক্যাটাগরি'] || ''),
-        region: obj.region || obj['অঞ্চল'] || '',
-        image_url: obj.image_url || obj['ছবি'] || '',
-      } as BulkItem;
+      const raw: Record<string, string> = {};
+      headers.forEach((h, i) => { raw[h] = values[i] || ''; });
+      return mapRawToItem(raw);
     }).filter(i => i.name.trim());
   };
 
@@ -90,13 +142,7 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
     try {
       const arr = JSON.parse(text);
       if (!Array.isArray(arr)) return [];
-      return arr.map((obj: any) => ({
-        name: obj.name || obj['নাম'] || '',
-        description: obj.description || obj['বিবরণ'] || '',
-        category: normalizeCategory(obj.category || obj['ক্যাটাগরি'] || ''),
-        region: obj.region || obj['অঞ্চল'] || '',
-        image_url: obj.image_url || obj['ছবি'] || '',
-      })).filter((i: BulkItem) => i.name.trim());
+      return arr.map((obj: Record<string, string>) => mapRawToItem(obj)).filter(i => i.name.trim());
     } catch { return []; }
   };
 
@@ -113,19 +159,20 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
       parsed = parseCSV(text);
     }
 
+    console.log(`[BulkUpload] Parsed ${parsed.length} rows from ${file.name}`);
+
     if (parsed.length === 0) {
-      toast.error(t('ফাইলে কোনো আইটেম পাওয়া যায়নি', 'No items found in file'));
+      toast.error(t('ফাইলে কোনো আইটেম পাওয়া যায়নি। name_bn/name কলাম আছে কিনা দেখুন।', 'No items found. Ensure name_bn/name column exists.'));
       return;
     }
 
-    // Validate & check duplicates
+    // Validate: only name + category required
     const existingLower = existingNames.map(n => n.toLowerCase());
     const seenNames = new Set<string>();
 
     const validated = parsed.map(item => {
       const errors: string[] = [];
       if (!item.name.trim()) errors.push(t('নাম নেই', 'Missing name'));
-      if (!item.description.trim()) errors.push(t('বিবরণ নেই', 'Missing description'));
       if (!item.category || !VALID_CATEGORIES.includes(item.category)) errors.push(t('ক্যাটাগরি ভুল', 'Invalid category'));
 
       const nameLower = item.name.toLowerCase().trim();
@@ -139,6 +186,8 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
       };
     });
 
+    console.log(`[BulkUpload] Valid: ${validated.filter(i => i._status === 'valid').length}, Duplicate: ${validated.filter(i => i._status === 'duplicate').length}, Error: ${validated.filter(i => i._status === 'error').length}`);
+
     setItems(validated);
     setStep('preview');
 
@@ -147,12 +196,24 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
     const translated = await Promise.all(
       validated.map(async item => {
         if (item._status !== 'valid') return item;
-        const [name_en, description_en, location_en] = await Promise.all([
-          translateText(item.name),
-          translateText(item.description),
-          item.region ? translateText(item.region) : Promise.resolve(''),
-        ]);
-        return { ...item, name_en, description_en, location_en };
+        const translatable = [
+          { src: item.name, key: 'name_en' },
+          { src: item.description, key: 'description_en' },
+          { src: item.region, key: 'location_en' },
+          { src: item.detailed_description, key: 'detailed_description_en' },
+          { src: item.nutrition, key: 'nutrition_en' },
+          { src: item.taste, key: 'taste_en' },
+          { src: item.price, key: 'price_en' },
+          { src: item.cooking_method, key: 'cooking_method_en' },
+          { src: item.cultural_importance, key: 'cultural_importance_en' },
+          { src: item.subcategory, key: 'subcategory_en' },
+          { src: item.origin, key: 'origin_en' },
+        ].filter(f => f.src?.trim());
+
+        const results = await Promise.all(translatable.map(f => translateText(f.src!)));
+        const updated = { ...item };
+        translatable.forEach((f, i) => { (updated as any)[f.key] = results[i]; });
+        return updated;
       })
     );
     setItems(translated);
@@ -176,14 +237,31 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
       const { error } = await supabase.from('items').insert({
         name: item.name.trim(),
         name_en: item.name_en || null,
-        description: item.description.trim(),
+        description: item.description.trim() || item.name.trim(),
         description_en: item.description_en || null,
+        detailed_description: item.detailed_description?.trim() || null,
+        detailed_description_en: item.detailed_description_en || null,
         category: item.category,
+        subcategory: item.subcategory?.trim() || null,
+        subcategory_en: item.subcategory_en || null,
         location: item.region?.trim() || null,
         location_en: item.location_en || null,
+        nutrition: item.nutrition?.trim() || null,
+        nutrition_en: item.nutrition_en || null,
+        taste: item.taste?.trim() || null,
+        taste_en: item.taste_en || null,
+        price: item.price?.trim() || null,
+        price_en: item.price_en || null,
+        cooking_method: item.cooking_method?.trim() || null,
+        cooking_method_en: item.cooking_method_en || null,
+        cultural_importance: item.cultural_importance?.trim() || null,
+        cultural_importance_en: item.cultural_importance_en || null,
+        origin: item.origin?.trim() || null,
+        origin_en: item.origin_en || null,
         image_url: item.image_url?.trim() || null,
       });
       if (!error) inserted++;
+      else console.error(`[BulkUpload] Insert error for "${item.name}":`, error.message);
       setProgress(Math.round(((i + 1) / validItems.length) * 100));
     }
 
@@ -207,8 +285,8 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
       {step === 'upload' && (
         <div>
           <p className="text-sm text-muted-foreground font-body mb-4">
-            {t('CSV বা JSON ফাইল আপলোড করুন। ফরম্যাট: name, description, category, region, image_url',
-              'Upload CSV or JSON file. Format: name, description, category, region, image_url')}
+            {t('CSV বা JSON ফাইল আপলোড করুন। প্রয়োজনীয় ফিল্ড: name_bn, category',
+              'Upload CSV or JSON. Required: name_bn, category')}
           </p>
           <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary transition-colors">
             <label className="cursor-pointer">
@@ -218,18 +296,16 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
               <input type="file" accept=".csv,.json" onChange={handleFileUpload} className="hidden" />
             </label>
           </div>
-          {/* Sample format hint */}
           <div className="mt-4 p-3 rounded-xl bg-secondary/50 text-xs font-mono text-muted-foreground">
             <p className="font-body font-semibold mb-1">{t('CSV উদাহরণ:', 'CSV Example:')}</p>
-            <p>name,description,category,region,image_url</p>
-            <p>ইলিশ,বাংলাদেশের জাতীয় মাছ,মাছ,পদ্মা নদী,</p>
+            <p>name_bn,description_bn,category,region,subcategory,nutrition,taste,price</p>
+            <p>ইলিশ,বাংলাদেশের জাতীয় মাছ,মাছ,পদ্মা নদী,নদীর মাছ,ওমেগা-৩,তৈলাক্ত,৮০০-২০০০৳</p>
           </div>
         </div>
       )}
 
       {step === 'preview' && (
         <div>
-          {/* Summary */}
           <div className="flex gap-3 mb-4 text-xs font-body">
             <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary">✓ {validCount} {t('বৈধ', 'valid')}</span>
             {dupCount > 0 && <span className="px-2.5 py-1 rounded-full bg-accent/20 text-accent-foreground">⚠ {dupCount} {t('ডুপ্লিকেট', 'duplicate')}</span>}
@@ -242,7 +318,6 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
             </div>
           )}
 
-          {/* Items list */}
           <div className="max-h-[300px] overflow-y-auto space-y-2 mb-4">
             {items.map((item, i) => (
               <div key={i} className={`flex items-center gap-3 p-3 rounded-xl text-sm ${
@@ -258,7 +333,7 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
                 <div className="flex-1 min-w-0">
                   <p className="font-heading text-sm font-bold truncate">{item.name}</p>
                   <p className="text-[10px] text-muted-foreground font-body truncate">
-                    {item.category} {item.name_en && `• ${item.name_en}`}
+                    {item.category} {item.subcategory && `• ${item.subcategory}`} {item.name_en && `• ${item.name_en}`}
                   </p>
                   {item._error && <p className="text-[10px] text-destructive">{item._error}</p>}
                 </div>
@@ -269,7 +344,6 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
             ))}
           </div>
 
-          {/* Actions */}
           <div className="flex gap-3">
             <button onClick={() => { setItems([]); setStep('upload'); }}
               className="flex-1 py-2.5 rounded-xl bg-secondary text-foreground text-sm font-body font-medium hover:bg-secondary/80 transition-colors">
