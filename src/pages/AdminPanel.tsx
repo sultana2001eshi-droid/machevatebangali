@@ -463,12 +463,19 @@ const AdminPanel = () => {
           )}
         </div>
 
+        {/* ── Toolbar ── */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
           {!showForm && (
-            <button onClick={() => { resetForm(); setShowForm(true); }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-body font-semibold text-sm transition-all hover:scale-[1.02] bg-primary text-primary-foreground shadow-md">
-              <Plus className="w-4 h-4" /> {t('নতুন যোগ', 'Add New')}
-            </button>
+            <>
+              <button onClick={() => { resetForm(); setShowForm(true); }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-body font-semibold text-sm transition-all hover:scale-[1.02] bg-primary text-primary-foreground shadow-md">
+                <Plus className="w-4 h-4" /> {t('নতুন যোগ', 'Add New')}
+              </button>
+              <button onClick={() => setShowBulkUpload(!showBulkUpload)}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-body font-medium text-sm transition-all border ${showBulkUpload ? 'bg-accent text-accent-foreground border-accent' : 'bg-secondary text-foreground border-border/50 hover:bg-accent/50'}`}>
+                <Upload className="w-4 h-4" /> {t('বাল্ক আপলোড', 'Bulk Upload')}
+              </button>
+            </>
           )}
           <div className="flex-1 min-w-[180px] relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -485,6 +492,14 @@ const AdminPanel = () => {
             </button>
           </div>
         </div>
+
+        {/* ── Bulk Upload ── */}
+        {showBulkUpload && (
+          <BulkUpload
+            existingNames={items.map(i => i.name)}
+            onComplete={() => { setShowBulkUpload(false); loadItems(); }}
+          />
+        )}
 
         {/* ── Form ── */}
         {showForm && (
