@@ -247,12 +247,12 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
             {items.map((item, i) => (
               <div key={i} className={`flex items-center gap-3 p-3 rounded-xl text-sm ${
                 item._status === 'valid' ? 'bg-primary/5 border border-primary/20' :
-                item._status === 'duplicate' ? 'bg-yellow-500/5 border border-yellow-500/20' :
+                item._status === 'duplicate' ? 'bg-accent/10 border border-accent/30' :
                 'bg-destructive/5 border border-destructive/20'
               }`}>
                 <div className="flex-shrink-0">
                   {item._status === 'valid' ? <Check className="w-4 h-4 text-primary" /> :
-                   item._status === 'duplicate' ? <AlertTriangle className="w-4 h-4 text-yellow-500" /> :
+                   item._status === 'duplicate' ? <AlertTriangle className="w-4 h-4 text-accent" /> :
                    <X className="w-4 h-4 text-destructive" />}
                 </div>
                 <div className="flex-1 min-w-0">
