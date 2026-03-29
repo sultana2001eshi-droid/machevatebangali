@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useWikimediaImage } from '@/hooks/useWikimediaImage';
 import { ImageIcon } from 'lucide-react';
 
-// AI-generated photorealistic fallback images for every item
+// Unique AI-generated fallback images for EVERY item
 import hilsaFallback from '@/assets/fallback/hilsa-fish.jpg';
 import rohuFallback from '@/assets/fallback/rohu-fish.jpg';
 import catlaFallback from '@/assets/fallback/catla-fish.jpg';
@@ -19,18 +19,29 @@ import ayreFallback from '@/assets/fallback/ayre-fish.jpg';
 import tilapiaFallback from '@/assets/fallback/tilapia-fish.jpg';
 import pomfretFallback from '@/assets/fallback/pomfret-fish.jpg';
 import putiFallback from '@/assets/fallback/puti-fish.jpg';
+// Rice types — each unique
 import miniketFallback from '@/assets/fallback/miniket-rice.jpg';
+import nazirshailFallback from '@/assets/fallback/nazirshail-rice.jpg';
+import kalijiraFallback from '@/assets/fallback/kalijira-rice.jpg';
+import chiniguraFallback from '@/assets/fallback/chinigura-rice.jpg';
+import kataribhogFallback from '@/assets/fallback/kataribhog-rice.jpg';
+import atopFallback from '@/assets/fallback/atop-rice.jpg';
 import parboiledFallback from '@/assets/fallback/parboiled-rice.jpg';
 import coarseFallback from '@/assets/fallback/coarse-rice.jpg';
-import redRiceCookedFallback from '@/assets/fallback/red-rice-cooked.jpg';
-import basmatCookedFallback from '@/assets/fallback/basmati-cooked.jpg';
-import biryaniDishFallback from '@/assets/fallback/biryani.jpg';
+import redRiceFallback from '@/assets/fallback/red-rice-cooked.jpg';
+import basmatiFallback from '@/assets/fallback/basmati-cooked.jpg';
+// Rice dishes — each unique
+import whiteRiceFallback from '@/assets/fallback/white-rice.jpg';
 import polaoFallback from '@/assets/fallback/polao.jpg';
 import khichuriFallback from '@/assets/fallback/khichuri.jpg';
+import biryaniDishFallback from '@/assets/fallback/biryani.jpg';
+import friedRiceFallback from '@/assets/fallback/fried-rice.jpg';
+import payeshFallback from '@/assets/fallback/payesh.jpg';
+import pantaBhatFallback from '@/assets/fallback/panta-bhat.jpg';
 
-// Complete fallback mapping: nameEn → local image (covers ALL items)
+// Complete 1:1 mapping — every nameEn gets its OWN unique image
 const LOCAL_FALLBACKS: Record<string, string> = {
-  // Fish
+  // Fish (16 unique)
   'Hilsa': hilsaFallback,
   'Rohu': rohuFallback,
   'Catla': catlaFallback,
@@ -47,28 +58,28 @@ const LOCAL_FALLBACKS: Record<string, string> = {
   'Tilapia': tilapiaFallback,
   'Pomfret': pomfretFallback,
   'Puti': putiFallback,
-  // Rice types
+  // Rice types (10 unique — NO duplicates)
   'Miniket Rice': miniketFallback,
-  'Nazirshail Rice': miniketFallback,
-  'Kalijira Rice': miniketFallback,
-  'Chinigura Rice': miniketFallback,
-  'Kataribhog Rice': miniketFallback,
-  'Atop Rice': miniketFallback,
-  'Basmati Rice': basmatCookedFallback,
+  'Nazirshail Rice': nazirshailFallback,
+  'Kalijira Rice': kalijiraFallback,
+  'Chinigura Rice': chiniguraFallback,
+  'Kataribhog Rice': kataribhogFallback,
+  'Atop Rice': atopFallback,
+  'Basmati Rice': basmatiFallback,
   'Parboiled Rice': parboiledFallback,
   'Coarse Rice': coarseFallback,
-  'Red Rice': miniketFallback,
-  // Rice dishes
-  'White Rice': miniketFallback,
+  'Red Rice': redRiceFallback,
+  // Rice dishes (7 unique — NO duplicates)
+  'White Rice': whiteRiceFallback,
   'Polao': polaoFallback,
   'Khichuri': khichuriFallback,
   'Biryani': biryaniDishFallback,
-  'Fried Rice': polaoFallback,
-  'Payesh': miniketFallback,
-  'Panta Bhat': miniketFallback,
+  'Fried Rice': friedRiceFallback,
+  'Payesh': payeshFallback,
+  'Panta Bhat': pantaBhatFallback,
 };
 
-// Category-specific fallbacks for items not in the map
+// Category fallbacks (last resort)
 const CATEGORY_FALLBACKS: Record<string, string> = {
   'fish': hilsaFallback,
   'rice-type': miniketFallback,
@@ -76,7 +87,6 @@ const CATEGORY_FALLBACKS: Record<string, string> = {
 };
 
 function getLocalFallback(nameEn: string, category: string): string {
-  // Always return a fallback — never allow empty
   return LOCAL_FALLBACKS[nameEn] || CATEGORY_FALLBACKS[category] || miniketFallback;
 }
 
@@ -101,7 +111,7 @@ const RealImage = ({ nameEn, category, alt, className = '', localFallback }: Rea
     );
   }
 
-  // If Wikimedia image loaded but errored, or no src — use local fallback (NEVER emoji)
+  // If Wikimedia errored or no src → always use local fallback (NEVER empty)
   const displaySrc = (!src || error) ? resolvedFallback : src;
 
   return (
@@ -110,9 +120,7 @@ const RealImage = ({ nameEn, category, alt, className = '', localFallback }: Rea
       alt={alt}
       loading="lazy"
       onError={() => {
-        if (!error) {
-          setError(true);
-        }
+        if (!error) setError(true);
       }}
       className={`object-cover ${className}`}
     />

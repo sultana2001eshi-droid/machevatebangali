@@ -54,19 +54,19 @@ const KNOWN_IMAGES: Record<string, string> = {
   'Silver Carp': 'Hypophthalmichthys_molitrix.jpg',
   'Grass Carp': 'Ctenopharyngodon_idella.jpg',
 
-  // ===== Rice Types (exact nameEn from content.ts) =====
+  // ===== Rice Types (each UNIQUE — no duplicates) =====
   'Miniket Rice': 'Bowl_of_rice_(1).jpg',
-  'Nazirshail Rice': 'Oryza_sativa_Rice.jpg',
+  'Nazirshail Rice': 'Oryza_sativa_-_Köhler–s_Medizinal-Pflanzen-232.jpg',
   'Kalijira Rice': 'Kalijira_rice.jpg',
-  'Chinigura Rice': 'Kalijira_rice.jpg',
+  'Chinigura Rice': 'Gobindobhog_Rice.jpg',
   'Kataribhog Rice': 'Kataribhog_rice.jpg',
   'Red Rice': 'Red_rice.jpg',
   'Parboiled Rice': 'Parboiled_rice.jpg',
-  'Coarse Rice': 'Oryza_sativa_Rice.jpg',
-  'Atop Rice': 'Oryza_sativa_Rice.jpg',
+  'Coarse Rice': 'US_long_grain_rice.jpg',
+  'Atop Rice': 'Sona_Masuri_Rice.jpg',
   'Basmati Rice': 'Basmati_Rice.jpg',
 
-  // ===== Rice Dishes (exact nameEn from content.ts) =====
+  // ===== Rice Dishes (each UNIQUE) =====
   'White Rice': 'Cooked_white_rice_in_a_bowl.jpg',
   'Polao': 'Pulao.jpg',
   'Khichuri': 'Khichdi_(1).jpg',
