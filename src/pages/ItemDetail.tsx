@@ -5,7 +5,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import type { FoodItem } from '@/data/content';
 import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 
 const categoryEmoji: Record<string, string> = {
   'rice-type': '🌾',
@@ -211,7 +210,6 @@ const ItemDetail = () => {
         )}
       </div>
 
-      <Footer />
     </div>
   );
 };

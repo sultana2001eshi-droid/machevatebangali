@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
 import type { FoodItem } from '@/data/content';
 import { X, RotateCcw } from 'lucide-react';
+import Leaderboard from './Leaderboard';
 
 type GameState = 'start' | 'playing' | 'info';
 
@@ -157,6 +158,7 @@ const FishingGame = () => {
                 <p className="text-4xl mb-2">🎉</p>
                 <p className="font-heading text-xl font-bold text-white">{t('সময় শেষ!', 'Time\'s Up!')}</p>
                 <p className="font-accent text-lg text-gold font-bold">🏆 {score}</p>
+                <Leaderboard gameName="fishing" currentScore={score} onClose={() => {}} />
               </div>
             )}
             {score === 0 && <p className="text-5xl mb-4">🐟</p>}
