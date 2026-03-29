@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import profileImg from '@/assets/md-nasrullah-profile.jpg';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import CategoryFilter from '@/components/CategoryFilter';
@@ -137,12 +138,16 @@ const Index = () => {
 
           {/* Creator Card */}
           <div className="glass-card p-6 md:p-8 max-w-lg mx-auto text-center border-gold/20">
-            <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl" style={{
-              background: 'linear-gradient(135deg, hsl(var(--gold) / 0.2), hsl(var(--primary) / 0.15))',
-              border: '2px solid hsl(var(--gold) / 0.3)',
-            }}>
-              👨‍💻
-            </div>
+            <img
+              src={profileImg}
+              alt="Md Nasrullah"
+              className="w-24 h-24 rounded-full object-cover mx-auto mb-4 border-2"
+              style={{
+                borderColor: 'hsl(43, 72%, 55% / 0.5)',
+                boxShadow: '0 8px 32px hsl(43, 72%, 55% / 0.15)',
+              }}
+              loading="lazy"
+            />
             <h4 className="font-heading text-xl font-bold text-foreground mb-1">Md Nasrullah</h4>
             <p className="font-accent text-xs tracking-wider uppercase text-muted-foreground mb-3">
               English Honours • BM College, Barishal
