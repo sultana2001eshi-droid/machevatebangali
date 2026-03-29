@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      game_scores: {
+        Row: {
+          created_at: string
+          game_name: string
+          id: string
+          player_name: string
+          score: number
+        }
+        Insert: {
+          created_at?: string
+          game_name: string
+          id?: string
+          player_name?: string
+          score?: number
+        }
+        Update: {
+          created_at?: string
+          game_name?: string
+          id?: string
+          player_name?: string
+          score?: number
+        }
+        Relationships: []
+      }
       hero_images: {
         Row: {
           created_at: string
