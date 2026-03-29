@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 // In-memory cache shared across all components
 const imageCache = new Map<string, string>();
 const pendingRequests = new Map<string, Promise<string | null>>();
+const failedItems = new Set<string>();
 
 // Direct name-to-Wikimedia-filename mappings for accuracy
 const KNOWN_IMAGES: Record<string, string> = {
@@ -44,12 +45,22 @@ const KNOWN_IMAGES: Record<string, string> = {
   'Atop Rice': 'Oryza_sativa_Rice.jpg',
   'Kataribhog Rice': 'Kataribhog_rice.jpg',
   'Nazirshail Rice': 'Oryza_sativa_Rice.jpg',
+  'Mrigel Fish': 'Cirrhinus_cirrhosus.jpg',
+  'Bata Fish': 'Labeo_bata.jpg',
+  'Taki Fish': 'Channa_punctata.jpg',
+  'Silver Carp': 'Hypophthalmichthys_molitrix.jpg',
+  'Grass Carp': 'Ctenopharyngodon_idella.jpg',
+  'Fried Rice': 'Nasi_goreng_in_Jakarta.jpg',
+  'Payesh': 'Kheer.jpg',
+  'Panta Bhat': 'Panta_Ilish.jpg',
 };
+
+// Reject images that are likely diagrams/maps/infographics
+const REJECT_PATTERNS = /flag|map|diagram|chart|logo|icon|symbol|stamp|coat.of.arms|emblem/i;
 
 function getKnownImageUrl(nameEn: string): string | null {
   const filename = KNOWN_IMAGES[nameEn];
   if (!filename) return null;
-  // Use Wikimedia Commons direct file URL via Special:FilePath
   return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(filename)}?width=600`;
 }
 
@@ -57,11 +68,11 @@ function buildSearchQuery(nameEn: string, category: string): string {
   const base = nameEn.trim();
   switch (category) {
     case 'fish':
-      return `${base} fish`;
+      return `${base} fish realistic`;
     case 'rice-type':
       return `${base} rice grain`;
     case 'rice-dish':
-      return `${base} food dish`;
+      return `${base} cooked food dish`;
     default:
       return base;
   }
@@ -69,8 +80,7 @@ function buildSearchQuery(nameEn: string, category: string): string {
 
 async function fetchWikimediaImage(query: string): Promise<string | null> {
   try {
-    // Search in File namespace (ns=6) to get actual images
-    const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=5&prop=imageinfo&iiprop=url|mime&iiurlwidth=600&format=json&origin=*`;
+    const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=5&prop=imageinfo&iiprop=url|mime|extmetadata&iiurlwidth=600&format=json&origin=*`;
     const res = await fetch(url);
     if (!res.ok) return null;
     const data = await res.json();
@@ -79,10 +89,14 @@ async function fetchWikimediaImage(query: string): Promise<string | null> {
 
     for (const page of Object.values(pages) as any[]) {
       const info = page?.imageinfo?.[0];
-      if (info && info.mime && (info.mime.startsWith('image/jpeg') || info.mime.startsWith('image/png'))) {
-        // Prefer thumbnail URL at 600px width for performance
-        return info.thumburl || info.url;
-      }
+      if (!info) continue;
+      if (!info.mime || (!info.mime.startsWith('image/jpeg') && !info.mime.startsWith('image/png'))) continue;
+
+      // Reject by title
+      const title = page.title || '';
+      if (REJECT_PATTERNS.test(title)) continue;
+
+      return info.thumburl || info.url;
     }
     return null;
   } catch {
@@ -93,23 +107,19 @@ async function fetchWikimediaImage(query: string): Promise<string | null> {
 async function resolveImage(nameEn: string, category: string): Promise<string | null> {
   const cacheKey = `${category}:${nameEn}`;
 
-  if (imageCache.has(cacheKey)) {
-    return imageCache.get(cacheKey)!;
-  }
-
-  if (pendingRequests.has(cacheKey)) {
-    return pendingRequests.get(cacheKey)!;
-  }
+  if (imageCache.has(cacheKey)) return imageCache.get(cacheKey)!;
+  if (failedItems.has(cacheKey)) return null;
+  if (pendingRequests.has(cacheKey)) return pendingRequests.get(cacheKey)!;
 
   const promise = (async () => {
-    // 1. Try known direct mapping first
+    // 1. Known direct mapping
     const known = getKnownImageUrl(nameEn);
     if (known) {
       imageCache.set(cacheKey, known);
       return known;
     }
 
-    // 2. Search Wikimedia File namespace
+    // 2. Search Wikimedia with category-specific query
     const query = buildSearchQuery(nameEn, category);
     const url = await fetchWikimediaImage(query);
     if (url) {
@@ -124,6 +134,7 @@ async function resolveImage(nameEn: string, category: string): Promise<string | 
       return fallback;
     }
 
+    failedItems.add(cacheKey);
     return null;
   })();
 

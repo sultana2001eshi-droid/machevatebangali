@@ -10,6 +10,17 @@ interface RealImageProps {
   localFallback?: string;
 }
 
+// SVG placeholder with food icon for fallback
+const CategoryPlaceholder = ({ category, alt, className }: { category: string; alt: string; className: string }) => {
+  const emoji = category === 'fish' ? '🐟' : category === 'rice-type' ? '🌾' : '🍚';
+  return (
+    <div className={`flex flex-col items-center justify-center bg-muted/30 ${className}`}>
+      <span className="text-3xl mb-1">{emoji}</span>
+      <span className="text-[10px] text-muted-foreground/50 font-body px-2 text-center leading-tight">{alt}</span>
+    </div>
+  );
+};
+
 const RealImage = ({ nameEn, category, alt, className = '', localFallback }: RealImageProps) => {
   const { src, loading } = useWikimediaImage(nameEn, category, localFallback);
   const [error, setError] = useState(false);
@@ -23,12 +34,7 @@ const RealImage = ({ nameEn, category, alt, className = '', localFallback }: Rea
   }
 
   if (!src || error) {
-    return (
-      <div className={`flex flex-col items-center justify-center bg-muted/30 ${className}`}>
-        <ImageIcon className="w-10 h-10 text-muted-foreground/30 mb-1" />
-        <span className="text-[10px] text-muted-foreground/40 font-body">{alt}</span>
-      </div>
-    );
+    return <CategoryPlaceholder category={category} alt={alt} className={className} />;
   }
 
   return (

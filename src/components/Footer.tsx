@@ -1,7 +1,6 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Heart, ExternalLink, ArrowUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import profileImg from '@/assets/md-nasrullah-profile.jpg';
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -60,39 +59,33 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Right — Creator with profile image */}
+            {/* Right — Creator (text only, no image) */}
             <div>
               <h4 className="font-accent text-xs tracking-[0.2em] uppercase mb-4" style={{ color: 'hsl(43, 72%, 60%)' }}>
                 {t('নির্মাতা', 'Creator')}
               </h4>
-              <div className="flex flex-col items-start gap-3">
-                <img
-                  src={profileImg}
-                  alt="Md Nasrullah"
-                  className="w-20 h-20 rounded-full object-cover border-2 shadow-lg"
-                  style={{ borderColor: 'hsl(43, 72%, 55% / 0.5)', boxShadow: '0 4px 20px hsl(43, 72%, 55% / 0.15)' }}
-                  loading="lazy"
-                />
-                <div>
-                  <a
-                    href="https://mdnasrullah.pro.bd"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-heading text-base font-semibold inline-flex items-center gap-1.5 transition-colors duration-300"
-                    style={{ color: 'hsl(43, 72%, 65%)' }}
-                  >
-                    Md Nasrullah <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                  <p className="font-body text-xs mt-0.5" style={{ color: 'hsl(40, 20%, 50%)' }}>
-                    English Honours, BM College, Barishal
-                  </p>
-                  <p className="font-body text-xs mt-1 italic" style={{ color: 'hsl(40, 20%, 45%)' }}>
-                    {t(
-                      '"বাংলার খাদ্য ঐতিহ্যকে ডিজিটালভাবে তুলে ধরাই আমার লক্ষ্য"',
-                      '"My goal is to digitally preserve Bengal\'s food heritage"'
-                    )}
-                  </p>
-                </div>
+              <div className="space-y-1.5">
+                <a
+                  href="https://mdnasrullah.pro.bd"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-heading text-base font-semibold inline-flex items-center gap-1.5 transition-colors duration-300 hover:opacity-80"
+                  style={{ color: 'hsl(43, 72%, 65%)' }}
+                >
+                  Md Nasrullah <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+                <p className="font-body text-xs" style={{ color: 'hsl(40, 20%, 55%)' }}>
+                  Department of English
+                </p>
+                <p className="font-body text-xs" style={{ color: 'hsl(40, 20%, 50%)' }}>
+                  BM College, Barishal
+                </p>
+                <p className="font-body text-xs mt-2 italic" style={{ color: 'hsl(40, 20%, 45%)' }}>
+                  {t(
+                    '"বাংলার খাদ্য ঐতিহ্যকে ডিজিটালভাবে তুলে ধরাই আমার লক্ষ্য"',
+                    '"My goal is to digitally preserve Bengal\'s food heritage"'
+                  )}
+                </p>
               </div>
             </div>
           </div>
