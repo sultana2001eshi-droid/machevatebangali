@@ -5,9 +5,11 @@ import HeroSection from '@/components/HeroSection';
 import CategoryFilter from '@/components/CategoryFilter';
 import FoodCard from '@/components/FoodCard';
 import Footer from '@/components/Footer';
+import Lightbox from '@/components/Lightbox';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { FoodItem } from '@/data/content';
 import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
+import { useAutoSwap } from '@/hooks/useAutoSwap';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
@@ -16,12 +18,68 @@ const GamesSection = lazy(() => import('@/components/GamesSection'));
 
 const PREVIEW_COUNT = 6;
 
+interface AutoSwapSectionProps {
+  allItems: FoodItem[];
+  fullList: FoodItem[];
+  emoji: string;
+  titleBn: string;
+  titleEn: string;
+  category: string;
+  onImageClick: (items: FoodItem[], index: number) => void;
+  t: (bn: string, en: string) => string;
+  navigate: (path: string) => void;
+}
+
+const AutoSwapSection = ({ allItems, fullList, emoji, titleBn, titleEn, category, onImageClick, t, navigate }: AutoSwapSectionProps) => {
+  const { displayItems, fadingIndices } = useAutoSwap(allItems);
+
+  if (allItems.length === 0) return null;
+
+  const items = displayItems.length > 0 ? displayItems : allItems.slice(0, PREVIEW_COUNT);
+
+  return (
+    <div className="mb-20">
+      <div className="flex items-center gap-3 mb-8">
+        <span className="text-3xl">{emoji}</span>
+        <div>
+          <h3 className="font-heading text-2xl md:text-3xl font-bold text-foreground">{t(titleBn, titleEn)}</h3>
+          <div className="h-0.5 w-16 mt-1 rounded-full bg-gradient-to-r from-gold to-transparent" />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+        {items.map((item, i) => (
+          <FoodCard
+            key={`${category}-${i}`}
+            item={item}
+            index={i}
+            fading={fadingIndices.has(i)}
+            onImageClick={() => onImageClick(fullList, fullList.findIndex(fi => fi.id === item.id))}
+          />
+        ))}
+      </div>
+      {fullList.length > PREVIEW_COUNT && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={() => navigate(`/category/${category}`)}
+            className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-accent font-semibold text-sm transition-all duration-300 border-2 border-gold/30 hover:border-gold/60 hover:shadow-lg"
+            style={{ background: 'linear-gradient(135deg, hsl(var(--gold) / 0.08), hsl(var(--gold) / 0.02))' }}
+          >
+            <span className="gold-accent">{t(`আরো ${fullList.length - PREVIEW_COUNT}টি দেখুন`, `View ${fullList.length - PREVIEW_COUNT} More`)}</span>
+            <ArrowRight className="w-4 h-4 gold-accent transition-transform duration-300 group-hover:translate-x-1" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Index = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const { data: dbItems, isLoading } = useItems();
+  const [lightbox, setLightbox] = useState<{ items: FoodItem[]; index: number } | null>(null);
 
   const allItems = useMemo(() => {
     if (!dbItems) return [];
@@ -55,32 +113,9 @@ const Index = () => {
   const riceDishItems = filteredItems.filter(i => i.category === 'rice-dish');
   const fishList = filteredItems.filter(i => i.category === 'fish');
 
-  const SectionTitle = ({ emoji, children }: { emoji: string; children: React.ReactNode }) => (
-    <div className="flex items-center gap-3 mb-8">
-      <span className="text-3xl">{emoji}</span>
-      <div>
-        <h3 className="font-heading text-2xl md:text-3xl font-bold text-foreground">{children}</h3>
-        <div className="h-0.5 w-16 mt-1 rounded-full bg-gradient-to-r from-gold to-transparent" />
-      </div>
-    </div>
-  );
-
-  const ViewMoreButton = ({ category, total }: { category: string; total: number }) => {
-    if (total <= PREVIEW_COUNT) return null;
-    return (
-      <div className="flex justify-center mt-8">
-        <button
-          onClick={() => navigate(`/category/${category}`)}
-          className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-accent font-semibold text-sm transition-all duration-300 border-2 border-gold/30 hover:border-gold/60 hover:shadow-lg"
-          style={{
-            background: 'linear-gradient(135deg, hsl(var(--gold) / 0.08), hsl(var(--gold) / 0.02))',
-          }}
-        >
-          <span className="gold-accent">{t(`আরো ${total - PREVIEW_COUNT}টি দেখুন`, `View ${total - PREVIEW_COUNT} More`)}</span>
-          <ArrowRight className="w-4 h-4 gold-accent transition-transform duration-300 group-hover:translate-x-1" />
-        </button>
-      </div>
-    );
+  const openLightbox = (items: FoodItem[], index: number) => {
+    const validIndex = Math.max(0, index);
+    setLightbox({ items, index: validIndex });
   };
 
   const LazyFallback = (
@@ -117,34 +152,42 @@ const Index = () => {
             </div>
           )}
 
-          {!isLoading && riceTypeItems.length > 0 && (
-            <div className="mb-20">
-              <SectionTitle emoji="🌾">{t('বাংলাদেশের চাল', 'Rice Types of Bangladesh')}</SectionTitle>
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {riceTypeItems.slice(0, PREVIEW_COUNT).map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
-              </div>
-              <ViewMoreButton category="rice-type" total={riceTypeItems.length} />
-            </div>
-          )}
-
-          {!isLoading && riceDishItems.length > 0 && (
-            <div className="mb-20">
-              <SectionTitle emoji="🍚">{t('ভাতের পদ', 'Rice Dishes')}</SectionTitle>
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {riceDishItems.slice(0, PREVIEW_COUNT).map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
-              </div>
-              <ViewMoreButton category="rice-dish" total={riceDishItems.length} />
-            </div>
-          )}
-
-          {!isLoading && fishList.length > 0 && (
-            <div>
-              <SectionTitle emoji="🐟">{t('বাংলাদেশের মাছ', 'Fish of Bangladesh')}</SectionTitle>
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {fishList.slice(0, PREVIEW_COUNT).map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
-              </div>
-              <ViewMoreButton category="fish" total={fishList.length} />
-            </div>
+          {!isLoading && (
+            <>
+              <AutoSwapSection
+                allItems={riceTypeItems}
+                fullList={riceTypeItems}
+                emoji="🌾"
+                titleBn="বাংলাদেশের চাল"
+                titleEn="Rice Types of Bangladesh"
+                category="rice-type"
+                onImageClick={openLightbox}
+                t={t}
+                navigate={navigate}
+              />
+              <AutoSwapSection
+                allItems={riceDishItems}
+                fullList={riceDishItems}
+                emoji="🍚"
+                titleBn="ভাতের পদ"
+                titleEn="Rice Dishes"
+                category="rice-dish"
+                onImageClick={openLightbox}
+                t={t}
+                navigate={navigate}
+              />
+              <AutoSwapSection
+                allItems={fishList}
+                fullList={fishList}
+                emoji="🐟"
+                titleBn="বাংলাদেশের মাছ"
+                titleEn="Fish of Bangladesh"
+                category="fish"
+                onImageClick={openLightbox}
+                t={t}
+                navigate={navigate}
+              />
+            </>
           )}
 
           {!isLoading && filteredItems.length === 0 && (
@@ -216,6 +259,15 @@ const Index = () => {
         <ImageGallery />
       </Suspense>
       <Footer />
+
+      {/* Lightbox */}
+      {lightbox && (
+        <Lightbox
+          items={lightbox.items}
+          initialIndex={lightbox.index}
+          onClose={() => setLightbox(null)}
+        />
+      )}
     </div>
   );
 };
