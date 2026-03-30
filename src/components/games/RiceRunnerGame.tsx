@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
 import type { FoodItem } from '@/data/content';
-import { X } from 'lucide-react';
+import { X, Trophy } from 'lucide-react';
 import Leaderboard from './Leaderboard';
 
 type GameState = 'start' | 'playing' | 'paused';
@@ -14,11 +14,11 @@ const RiceRunnerGame = () => {
   const [gameState, setGameState] = useState<GameState>('start');
   const [score, setScore] = useState(0);
   const [speed, setSpeed] = useState(1);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const riceTypes = (dbItems || []).map(dbItemToFoodItem).filter(i => i.category === 'rice-type');
 
-  // Increase speed over time
   useEffect(() => {
     if (gameState !== 'playing') return;
     const interval = setInterval(() => setSpeed(s => Math.min(s + 0.1, 3)), 8000);
@@ -29,10 +29,12 @@ const RiceRunnerGame = () => {
     setSelectedRice(rice);
     setScore(s => s + 10);
     setGameState('paused');
+    setShowLeaderboard(false);
   };
 
   const handleClose = () => {
     setSelectedRice(null);
+    setShowLeaderboard(false);
     setGameState('playing');
   };
 
@@ -43,7 +45,6 @@ const RiceRunnerGame = () => {
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border/50 min-h-[340px]"
       style={{ background: 'linear-gradient(135deg, hsl(120 30% 92%), hsl(80 40% 88%), hsl(45 50% 90%))' }}>
-      {/* Decorative paddy field bg */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute bottom-0 left-0 right-0 h-1/3" style={{
           background: 'repeating-linear-gradient(90deg, hsl(120 40% 40%) 0px, hsl(120 40% 50%) 2px, transparent 2px, transparent 20px)',
@@ -106,7 +107,6 @@ const RiceRunnerGame = () => {
             </button>
           ))}
 
-          {/* Obstacles */}
           {[0, 1, 2].map(i => (
             <div key={`obs-${i}`} className="absolute text-2xl pointer-events-none opacity-40"
               style={{
@@ -120,7 +120,7 @@ const RiceRunnerGame = () => {
         </div>
       )}
 
-      {/* Info modal */}
+      {/* Info modal - separate from leaderboard */}
       {selectedRice && (
         <div className="absolute inset-0 z-30 flex items-center justify-center p-4 animate-fade-in">
           <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={handleClose} />
@@ -139,8 +139,26 @@ const RiceRunnerGame = () => {
                 {selectedRice.region && <span className="text-xs text-muted-foreground font-body">{t(selectedRice.region, selectedRice.regionEn || '')}</span>}
               </div>
             </div>
-            <Leaderboard gameName="rice-runner" currentScore={score} onClose={handleClose} />
-            <div className="flex gap-2 mt-3">
+
+            <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/50 mb-3">
+              <span className="text-sm font-body text-muted-foreground">{t('আপনার স্কোর', 'Your Score')}</span>
+              <span className="font-heading text-xl font-bold gold-accent">{score}</span>
+            </div>
+
+            {/* Leaderboard toggle */}
+            {showLeaderboard ? (
+              <Leaderboard gameName="rice-runner" currentScore={score} onClose={() => setShowLeaderboard(false)} />
+            ) : (
+              <button
+                onClick={() => setShowLeaderboard(true)}
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-border/50 bg-card/50 text-sm font-accent text-muted-foreground hover:text-foreground hover:border-gold/30 transition-all mb-3"
+              >
+                <Trophy className="w-3.5 h-3.5" />
+                {t('লিডারবোর্ড দেখুন', 'View Leaderboard')}
+              </button>
+            )}
+
+            <div className="flex gap-2">
               <button onClick={handleClose} className="flex-1 px-3 py-2 rounded-lg bg-secondary text-sm font-medium transition-colors">
                 {t('চালিয়ে যান 🌾', 'Continue 🌾')}
               </button>
