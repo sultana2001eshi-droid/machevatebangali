@@ -94,27 +94,36 @@ const GalleryPage = () => {
             </div>
           ) : items.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {items.map((item, i) => (
-                <div
-                  key={item.id}
-                  className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer animate-fade-in"
-                  style={{ animationDelay: `${Math.min(i * 50, 400)}ms`, animationFillMode: 'both' }}
-                  onClick={() => openLightbox(item, i)}
-                >
-                  <img
-                    src={item.image}
-                    alt={lang === 'bn' ? item.name : item.nameEn}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
-                    <p className="font-heading text-white text-sm drop-shadow-md">
-                      {lang === 'bn' ? item.name : item.nameEn}
-                    </p>
+              {items.map((item, i) => {
+                const isLastAlone = i === items.length - 1 && items.length % 2 === 1;
+                const isLastAloneMd = i === items.length - 1 && items.length % 3 === 1;
+                const isLastAloneLg = i === items.length - 1 && items.length % 4 === 1;
+                return (
+                  <div
+                    key={item.id}
+                    className={`group relative overflow-hidden cursor-pointer animate-fade-in rounded-2xl
+                      ${isLastAlone ? 'col-span-2 aspect-[2/1]' : 'aspect-square'}
+                      ${isLastAloneMd ? 'md:col-span-3 md:aspect-[3/1]' : ''}
+                      ${isLastAloneLg ? 'lg:col-span-4 lg:aspect-[4/1]' : ''}
+                    `}
+                    style={{ animationDelay: `${Math.min(i * 50, 400)}ms`, animationFillMode: 'both' }}
+                    onClick={() => openLightbox(item, i)}
+                  >
+                    <img
+                      src={item.image}
+                      alt={lang === 'bn' ? item.name : item.nameEn}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
+                      <p className="font-heading text-white text-sm md:text-base drop-shadow-md">
+                        {lang === 'bn' ? item.name : item.nameEn}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-20">
