@@ -14,9 +14,11 @@ const categoryEmoji: Record<string, string> = {
 interface FoodCardProps {
   item: FoodItem;
   index: number;
+  fading?: boolean;
+  onImageClick?: () => void;
 }
 
-const FoodCard = ({ item, index }: FoodCardProps) => {
+const FoodCard = ({ item, index, fading, onImageClick }: FoodCardProps) => {
   const navigate = useNavigate();
   const { lang, t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
@@ -33,12 +35,15 @@ const FoodCard = ({ item, index }: FoodCardProps) => {
   return (
     <div
       ref={ref}
-      className={`glass-card cursor-pointer group transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+      className={`glass-card cursor-pointer group transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${fading ? 'opacity-0 translate-y-4 scale-[0.97]' : ''}`}
       style={{ transitionDelay: `${index * 0.06}s` }}
       onClick={() => setExpanded(!expanded)}
     >
       {/* Image with hover zoom */}
-      <div className="relative overflow-hidden aspect-[4/3] bg-secondary rounded-t-2xl">
+      <div
+        className="relative overflow-hidden aspect-[4/3] bg-secondary rounded-t-2xl"
+        onClick={(e) => { if (onImageClick) { e.stopPropagation(); onImageClick(); } }}
+      >
         {hasDirectImage ? (
           <img
             src={item.image}
