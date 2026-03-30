@@ -1,18 +1,24 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import profileImg from '@/assets/md-nasrullah-profile.jpg';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import CategoryFilter from '@/components/CategoryFilter';
 import FoodCard from '@/components/FoodCard';
-import ImageGallery from '@/components/ImageGallery';
-import GamesSection from '@/components/GamesSection';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { FoodItem } from '@/data/content';
 import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+
+const ImageGallery = lazy(() => import('@/components/ImageGallery'));
+const GamesSection = lazy(() => import('@/components/GamesSection'));
+
+const PREVIEW_COUNT = 6;
 
 const Index = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const { data: dbItems, isLoading } = useItems();
@@ -59,6 +65,32 @@ const Index = () => {
     </div>
   );
 
+  const ViewMoreButton = ({ category, total }: { category: string; total: number }) => {
+    if (total <= PREVIEW_COUNT) return null;
+    return (
+      <div className="flex justify-center mt-8">
+        <button
+          onClick={() => navigate(`/category/${category}`)}
+          className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-accent font-semibold text-sm transition-all duration-300 border-2 border-gold/30 hover:border-gold/60 hover:shadow-lg"
+          style={{
+            background: 'linear-gradient(135deg, hsl(var(--gold) / 0.08), hsl(var(--gold) / 0.02))',
+          }}
+        >
+          <span className="gold-accent">{t(`আরো ${total - PREVIEW_COUNT}টি দেখুন`, `View ${total - PREVIEW_COUNT} More`)}</span>
+          <ArrowRight className="w-4 h-4 gold-accent transition-transform duration-300 group-hover:translate-x-1" />
+        </button>
+      </div>
+    );
+  };
+
+  const LazyFallback = (
+    <div className="py-16 text-center">
+      <div className="animate-pulse font-heading text-lg text-muted-foreground">
+        {t('লোড হচ্ছে...', 'Loading...')}
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background noise-bg">
       <Navbar onSearch={setSearchQuery} />
@@ -89,8 +121,9 @@ const Index = () => {
             <div className="mb-20">
               <SectionTitle emoji="🌾">{t('বাংলাদেশের চাল', 'Rice Types of Bangladesh')}</SectionTitle>
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {riceTypeItems.map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
+                {riceTypeItems.slice(0, PREVIEW_COUNT).map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
               </div>
+              <ViewMoreButton category="rice-type" total={riceTypeItems.length} />
             </div>
           )}
 
@@ -98,8 +131,9 @@ const Index = () => {
             <div className="mb-20">
               <SectionTitle emoji="🍚">{t('ভাতের পদ', 'Rice Dishes')}</SectionTitle>
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {riceDishItems.map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
+                {riceDishItems.slice(0, PREVIEW_COUNT).map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
               </div>
+              <ViewMoreButton category="rice-dish" total={riceDishItems.length} />
             </div>
           )}
 
@@ -107,8 +141,9 @@ const Index = () => {
             <div>
               <SectionTitle emoji="🐟">{t('বাংলাদেশের মাছ', 'Fish of Bangladesh')}</SectionTitle>
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {fishList.map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
+                {fishList.slice(0, PREVIEW_COUNT).map((item, i) => <FoodCard key={item.id} item={item} index={i} />)}
               </div>
+              <ViewMoreButton category="fish" total={fishList.length} />
             </div>
           )}
 
@@ -174,8 +209,12 @@ const Index = () => {
         </div>
       </section>
 
-      <GamesSection />
-      <ImageGallery />
+      <Suspense fallback={LazyFallback}>
+        <GamesSection />
+      </Suspense>
+      <Suspense fallback={LazyFallback}>
+        <ImageGallery />
+      </Suspense>
       <Footer />
     </div>
   );
