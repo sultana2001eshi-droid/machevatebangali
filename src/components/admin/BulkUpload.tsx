@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useQueryClient } from '@tanstack/react-query';
-import { Upload, FileText, AlertTriangle, Check, X, Loader2 } from 'lucide-react';
+import { Upload, FileText, AlertTriangle, Check, X, Loader2, Download } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface BulkItem {
