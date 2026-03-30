@@ -1,5 +1,5 @@
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMemo } from 'react';
 import Navbar from '@/components/Navbar';
 import FoodCard from '@/components/FoodCard';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -89,5 +89,4 @@ const CategoryPage = () => {
   );
 };
 
-import { useState } from 'react';
 export default CategoryPage;
