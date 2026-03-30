@@ -124,19 +124,24 @@ const ImageGallery = () => {
             </p>
           </div>
 
-          {/* Bento Grid - 4 images */}
-          <div className={`grid grid-cols-2 grid-rows-2 gap-3 md:gap-5 max-w-4xl mx-auto transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-            {currentItems.slice(0, FEATURED_COUNT).map((item, i) => {
-              const isHero = i === 0;
-              return (
+          {/* Bento Grid */}
+          <div className={`flex flex-col gap-3 md:gap-5 max-w-4xl mx-auto transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+            {(() => {
+              const items = currentItems.slice(0, FEATURED_COUNT);
+              const hero = items[0];
+              const rest = items.slice(1);
+              const restIsOdd = rest.length % 2 === 1;
+              const pairedItems = restIsOdd ? rest.slice(0, -1) : rest;
+              const lastItem = restIsOdd ? rest[rest.length - 1] : null;
+
+              const renderCard = (item: any, i: number, isWide: boolean) => (
                 <div
                   key={`${item.id}-${setIndex}`}
                   className={`
-                    relative overflow-hidden cursor-pointer group
-                    rounded-3xl
+                    relative overflow-hidden cursor-pointer group rounded-3xl
                     transition-all duration-700 ease-out
                     ${getSlotAnimation(i)}
-                    ${isHero ? 'col-span-2 row-span-1 aspect-[16/9] md:aspect-[2/1]' : 'col-span-1 row-span-1 aspect-square'}
+                    ${isWide ? 'aspect-[16/9] md:aspect-[2/1]' : 'aspect-square'}
                   `}
                   style={{
                     transitionDelay: `${i * 80}ms`,
@@ -146,20 +151,15 @@ const ImageGallery = () => {
                   onMouseLeave={() => setHoveredId(null)}
                   onClick={() => setLightboxItem(item)}
                 >
-                  {/* Image */}
                   <img
                     src={item.image}
                     alt={lang === 'bn' ? item.name : item.nameEn}
                     loading={i < 2 ? 'eager' : 'lazy'}
                     className={`w-full h-full object-cover transition-transform duration-1000 ease-out ${hoveredId === item.id ? 'scale-110' : 'scale-100'}`}
                   />
-
-                  {/* Gradient overlay */}
                   <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent transition-opacity duration-500 ${hoveredId === item.id ? 'opacity-100' : 'opacity-60'}`} />
-
-                  {/* Content */}
                   <div className={`absolute bottom-0 left-0 right-0 p-4 md:p-6 transition-all duration-500 ${hoveredId === item.id ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-70'}`}>
-                    <h3 className={`font-heading text-white drop-shadow-md ${isHero ? 'text-base md:text-xl' : 'text-sm md:text-base'}`}>
+                    <h3 className={`font-heading text-white drop-shadow-md ${isWide ? 'text-base md:text-xl' : 'text-sm md:text-base'}`}>
                       {lang === 'bn' ? item.name : item.nameEn}
                     </h3>
                     {item.subCategory && (
@@ -168,17 +168,31 @@ const ImageGallery = () => {
                       </p>
                     )}
                   </div>
-
-                  {/* Zoom icon on hover */}
                   <div className={`absolute top-3 right-3 md:top-4 md:right-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center transition-all duration-400 ${hoveredId === item.id ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
                     <ZoomIn className="w-4 h-4 md:w-5 md:h-5 text-white" />
                   </div>
-
-                  {/* Premium border */}
                   <div className={`absolute inset-0 rounded-3xl border transition-all duration-500 pointer-events-none ${hoveredId === item.id ? 'border-gold/30' : 'border-white/5'}`} />
                 </div>
               );
-            })}
+
+              return (
+                <>
+                  {/* Hero - always full width */}
+                  {hero && renderCard(hero, 0, true)}
+
+                  {/* Paired rows - 2 per row */}
+                  {Array.from({ length: Math.ceil(pairedItems.length / 2) }).map((_, rowIdx) => (
+                    <div key={rowIdx} className="grid grid-cols-2 gap-3 md:gap-5">
+                      {renderCard(pairedItems[rowIdx * 2], rowIdx * 2 + 1, false)}
+                      {pairedItems[rowIdx * 2 + 1] && renderCard(pairedItems[rowIdx * 2 + 1], rowIdx * 2 + 2, false)}
+                    </div>
+                  ))}
+
+                  {/* Orphan last card → full-width featured */}
+                  {lastItem && renderCard(lastItem, rest.length, true)}
+                </>
+              );
+            })()}
           </div>
 
           {/* CTA */}
