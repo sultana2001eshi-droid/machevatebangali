@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useQueryClient } from '@tanstack/react-query';
-import { Upload, FileText, AlertTriangle, Check, X, Loader2 } from 'lucide-react';
+import { Upload, FileText, AlertTriangle, Check, X, Loader2, Download } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface BulkItem {
@@ -301,6 +301,20 @@ const BulkUpload = ({ existingNames, onComplete }: BulkUploadProps) => {
             <p>name_bn,description_bn,category,region,subcategory,nutrition,taste,price</p>
             <p>ইলিশ,বাংলাদেশের জাতীয় মাছ,মাছ,পদ্মা নদী,নদীর মাছ,ওমেগা-৩,তৈলাক্ত,৮০০-২০০০৳</p>
           </div>
+          <button
+            onClick={() => {
+              const header = 'name_bn,description_bn,details_bn,category,subcategory,region,nutrition,taste,price,cooking,culture,origin,image_url';
+              const example = 'ইলিশ,বাংলাদেশের জাতীয় মাছ,ইলিশ একটি সুস্বাদু মাছ,মাছ,নদীর মাছ,পদ্মা নদী,ওমেগা-৩ সমৃদ্ধ,তৈলাক্ত ও সুস্বাদু,৮০০-২০০০৳,ভাপা বা সর্ষে ইলিশ,বাঙালি সংস্কৃতির অবিচ্ছেদ্য অংশ,পদ্মা নদী,';
+              const blob = new Blob([header + '\n' + example + '\n'], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url; a.download = 'bulk_upload_template.csv'; a.click();
+              URL.revokeObjectURL(url);
+            }}
+            className="mt-3 flex items-center gap-2 text-xs font-body font-medium text-primary hover:text-primary/80 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" /> {t('স্যাম্পল CSV ডাউনলোড করুন', 'Download sample CSV template')}
+          </button>
         </div>
       )}
 
