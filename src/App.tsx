@@ -10,6 +10,7 @@ import About from "./pages/About.tsx";
 import Terms from "./pages/Terms.tsx";
 import ItemDetail from "./pages/ItemDetail.tsx";
 import CategoryPage from "./pages/CategoryPage.tsx";
+import GalleryPage from "./pages/GalleryPage.tsx";
 import AdminLogin from "./pages/AdminLogin.tsx";
 import AdminPanel from "./pages/AdminPanel.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -29,6 +30,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/category/:category" element={<CategoryPage />} />
+              <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/item/:id" element={<ItemDetail />} />
               <Route path="/about" element={<About />} />
               <Route path="/terms" element={<Terms />} />
