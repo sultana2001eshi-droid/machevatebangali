@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
+import { useAnimatedCounter } from '@/hooks/useAnimatedCounter';
 import heroBg from '@/assets/hero-bg.jpg';
 
 interface HeroImage {
@@ -9,11 +11,52 @@ interface HeroImage {
   display_order: number;
 }
 
+const StatCard = ({ target, labelBn, labelEn }: { target: number; labelBn: string; labelEn: string }) => {
+  const { t } = useLanguage();
+  const { count, ref } = useAnimatedCounter(target);
+
+  // Convert to Bengali numerals
+  const toBengali = (n: number) =>
+    String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[parseInt(d)]);
+
+  return (
+    <div ref={ref} className="text-center relative group">
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+        style={{ background: 'radial-gradient(circle, hsl(var(--gold) / 0.06) 0%, transparent 70%)' }}
+      />
+      <p className="font-heading text-3xl sm:text-4xl font-bold tabular-nums tracking-tight"
+        style={{
+          color: 'hsl(43, 72%, 65%)',
+          textShadow: '0 2px 12px rgba(212, 175, 55, 0.2)',
+        }}
+      >
+        {toBengali(count)}+
+      </p>
+      <p className="font-accent text-[10px] sm:text-xs mt-1 tracking-wide"
+        style={{ color: 'hsl(40, 20%, 65%)' }}
+      >
+        {t(labelBn, labelEn)}
+      </p>
+    </div>
+  );
+};
+
 const HeroSection = () => {
   const { t } = useLanguage();
   const [heroImages, setHeroImages] = useState<HeroImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const { data: dbItems } = useItems();
+
+  // Compute live counts from CMS
+  const counts = useMemo(() => {
+    if (!dbItems) return { rice: 0, fish: 0, dish: 0 };
+    const items = dbItems.map(dbItemToFoodItem);
+    return {
+      rice: items.filter(i => i.category === 'rice-type').length,
+      fish: items.filter(i => i.category === 'fish').length,
+      dish: items.filter(i => i.category === 'rice-dish').length,
+    };
+  }, [dbItems]);
 
   // Fetch hero images from DB
   useEffect(() => {
@@ -39,11 +82,7 @@ const HeroSection = () => {
   useEffect(() => {
     if (slides.length <= 1) return;
     const interval = setInterval(() => {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentIndex(prev => (prev + 1) % slides.length);
-        setIsTransitioning(false);
-      }, 800);
+      setCurrentIndex(prev => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(interval);
   }, [slides.length]);
@@ -164,18 +203,11 @@ const HeroSection = () => {
           </a>
         </div>
 
-        {/* Stats */}
+        {/* Dynamic Stats */}
         <div className="mt-14 grid grid-cols-3 gap-4 max-w-md mx-auto animate-fade-up" style={{ animationDelay: '0.5s' }}>
-          {[
-            { num: '১০+', label: t('প্রকার চাল', 'Rice Types') },
-            { num: '১৬+', label: t('প্রকার মাছ', 'Fish Types') },
-            { num: '৬+', label: t('ভাতের পদ', 'Rice Dishes') },
-          ].map((stat, i) => (
-            <div key={i} className="text-center">
-              <p className="font-heading text-2xl sm:text-3xl font-bold" style={{ color: 'hsl(43, 72%, 65%)', textShadow: '0 2px 12px rgba(212, 175, 55, 0.2)' }}>{stat.num}</p>
-              <p className="font-body text-xs" style={{ color: 'hsl(40, 20%, 65%)' }}>{stat.label}</p>
-            </div>
-          ))}
+          <StatCard target={counts.rice} labelBn="প্রকার চাল" labelEn="Rice Types" />
+          <StatCard target={counts.fish} labelBn="প্রকার মাছ" labelEn="Fish Types" />
+          <StatCard target={counts.dish} labelBn="ভাতের পদ" labelEn="Rice Dishes" />
         </div>
       </div>
     </section>
