@@ -6,6 +6,7 @@ import CategoryFilter from '@/components/CategoryFilter';
 import FoodCard from '@/components/FoodCard';
 import Footer from '@/components/Footer';
 import Lightbox from '@/components/Lightbox';
+import SmartSearch from '@/components/SmartSearch';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { FoodItem } from '@/data/content';
 import { useItems, dbItemToFoodItem } from '@/hooks/useItems';
@@ -140,6 +141,11 @@ const Index = () => {
             </p>
             <h2 className="section-heading text-3xl md:text-5xl">{t('ক্যাটাগরি অনুযায়ী অন্বেষণ', 'Explore by Category')}</h2>
             <p className="section-subheading mt-3">{t('আপনার পছন্দের বিভাগ নির্বাচন করুন', 'Select your preferred category')}</p>
+          </div>
+
+          {/* Smart Search */}
+          <div className="max-w-lg mx-auto mb-10">
+            <SmartSearch allItems={allItems} onSearch={setSearchQuery} />
           </div>
 
           <CategoryFilter activeCategory={activeCategory} onCategoryChange={setActiveCategory} />

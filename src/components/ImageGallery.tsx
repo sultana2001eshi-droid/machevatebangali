@@ -22,12 +22,13 @@ const ImageGallery = () => {
   const prevSetRef = useRef<string[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
-  // All items with images, shuffled once
+  // All items with images, shuffled once — stable ref to prevent re-shuffle
   const allGalleryItems = useMemo(() => {
-    if (!dbItems) return [];
+    if (!dbItems || dbItems.length === 0) return [];
     const items = dbItems
-      .filter(item => item.image_url)
+      .filter(item => item.image_url && item.image_url.startsWith('http'))
       .map(dbItemToFoodItem);
+    // Fisher-Yates shuffle
     for (let i = items.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [items[i], items[j]] = [items[j], items[i]];
@@ -38,12 +39,16 @@ const ImageGallery = () => {
   const totalSets = Math.max(1, Math.ceil(allGalleryItems.length / FEATURED_COUNT));
 
   const currentItems = useMemo(() => {
-    const start = (setIndex % totalSets) * FEATURED_COUNT;
+    if (allGalleryItems.length === 0) return [];
+    const safeIndex = setIndex % totalSets;
+    const start = safeIndex * FEATURED_COUNT;
     const slice = allGalleryItems.slice(start, start + FEATURED_COUNT);
+    // Always guarantee FEATURED_COUNT items by wrapping around
     if (slice.length < FEATURED_COUNT && allGalleryItems.length >= FEATURED_COUNT) {
       return [...slice, ...allGalleryItems.slice(0, FEATURED_COUNT - slice.length)];
     }
-    return slice;
+    // If we have fewer items total than FEATURED_COUNT, just show all
+    return slice.length > 0 ? slice : allGalleryItems.slice(0, FEATURED_COUNT);
   }, [allGalleryItems, setIndex, totalSets]);
 
   // Staggered rotation
@@ -92,7 +97,10 @@ const ImageGallery = () => {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
+  // Safe guard: never render empty, show loading placeholder if data pending
+  if (allGalleryItems.length === 0 && !dbItems) return null;
   if (allGalleryItems.length === 0) return null;
+  if (currentItems.length === 0) return null;
 
   const getSlotAnimation = (index: number) => {
     if (exitingSlots.has(index)) {

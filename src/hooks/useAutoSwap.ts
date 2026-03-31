@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import type { FoodItem } from '@/data/content';
 
 const DISPLAY_COUNT = 6;
-const SWAP_INTERVAL = 25000; // 25 seconds
+const SWAP_INTERVAL = 18000; // 18 seconds
 
 /**
  * Smart auto-swap hook: always returns exactly `DISPLAY_COUNT` items,

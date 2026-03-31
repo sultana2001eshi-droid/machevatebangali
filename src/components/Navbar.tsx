@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Search } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';
@@ -10,16 +10,9 @@ interface NavbarProps {
 
 const Navbar = ({ onSearch }: NavbarProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const { lang, setLang, t } = useLanguage();
   const { isDark, toggleDark } = useTheme();
   const navigate = useNavigate();
-
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-    onSearch(value);
-  };
 
   const handleNav = (path: string) => {
     setMenuOpen(false);
@@ -46,27 +39,9 @@ const Navbar = ({ onSearch }: NavbarProps) => {
             <span>বাঙ্গালী</span>
           </h1>
 
-          <button
-            onClick={() => setSearchOpen(s => !s)}
-            className="p-2 rounded-lg hover:bg-secondary transition-colors"
-            aria-label="Search"
-          >
-            <Search className="w-5 h-5 text-foreground" />
-          </button>
+          {/* Spacer to balance layout */}
+          <div className="w-10" />
         </div>
-
-        {searchOpen && (
-          <div className="border-t border-border/50 px-4 py-3 animate-fade-in">
-            <input
-              type="text"
-              placeholder={t('মাছ বা ভাত খুঁজুন...', 'Search fish or rice...')}
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-secondary text-foreground placeholder:text-muted-foreground border border-border/50 focus:outline-none focus:ring-2 focus:ring-primary font-body"
-              autoFocus
-            />
-          </div>
-        )}
       </nav>
 
       {menuOpen && (
