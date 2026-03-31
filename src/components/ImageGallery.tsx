@@ -97,7 +97,10 @@ const ImageGallery = () => {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
+  // Safe guard: never render empty, show loading placeholder if data pending
+  if (allGalleryItems.length === 0 && !dbItems) return null;
   if (allGalleryItems.length === 0) return null;
+  if (currentItems.length === 0) return null;
 
   const getSlotAnimation = (index: number) => {
     if (exitingSlots.has(index)) {
