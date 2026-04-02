@@ -16,6 +16,7 @@ import { ArrowRight } from 'lucide-react';
 
 const ImageGallery = lazy(() => import('@/components/ImageGallery'));
 const GamesSection = lazy(() => import('@/components/GamesSection'));
+const DistrictFoodMap = lazy(() => import('@/components/DistrictFoodMap'));
 
 const PREVIEW_COUNT = 6;
 
