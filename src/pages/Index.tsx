@@ -260,6 +260,9 @@ const Index = () => {
       </section>
 
       <Suspense fallback={LazyFallback}>
+        <DistrictFoodMap />
+      </Suspense>
+      <Suspense fallback={LazyFallback}>
         <GamesSection />
       </Suspense>
       <Suspense fallback={LazyFallback}>
