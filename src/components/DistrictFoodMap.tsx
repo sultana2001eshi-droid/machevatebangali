@@ -41,20 +41,37 @@ const DistrictFoodMap = () => {
     return dbItems.map(dbItemToFoodItem);
   }, [dbItems]);
 
-  // Match items from DB by checking if the item's region/name matches district keywords
+  // Match items from DB by checking location field against district keywords
   const getDistrictItems = (district: District): FoodItem[] => {
     const keywords = [
       district.nameBn.toLowerCase(),
       district.nameEn.toLowerCase(),
       ...district.iconicDishes.map(d => d.toLowerCase()),
     ];
-    return allItems.filter(item => {
-      const searchFields = [
-        item.name, item.nameEn, item.region || '', item.regionEn || '',
-        item.description, item.descriptionEn,
-      ].map(s => s.toLowerCase());
-      return keywords.some(k => searchFields.some(f => f.includes(k)));
-    }).slice(0, 4);
+    
+    // Also match raw DB location field for richer results
+    const rawDbItems = dbItems || [];
+    const matchedIds = new Set<string>();
+    const results: FoodItem[] = [];
+
+    for (const dbItem of rawDbItems) {
+      const loc = (dbItem.location || '').toLowerCase();
+      const locEn = (dbItem.location_en || '').toLowerCase();
+      const name = dbItem.name.toLowerCase();
+      const nameEn = (dbItem.name_en || '').toLowerCase();
+      const desc = dbItem.description.toLowerCase();
+      const descEn = (dbItem.description_en || '').toLowerCase();
+      
+      const allFields = [loc, locEn, name, nameEn, desc, descEn];
+      const matched = keywords.some(k => allFields.some(f => f.includes(k)));
+      
+      if (matched && !matchedIds.has(dbItem.id)) {
+        matchedIds.add(dbItem.id);
+        results.push(dbItemToFoodItem(dbItem));
+      }
+      if (results.length >= 6) break;
+    }
+    return results;
   };
 
   return (
