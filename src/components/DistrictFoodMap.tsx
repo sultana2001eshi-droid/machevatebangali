@@ -18,14 +18,15 @@ interface District {
 }
 
 const districts: District[] = [
-  { id: 'barishal', nameBn: 'বরিশাল', nameEn: 'Barishal', x: 48, y: 72, iconicDishes: ['ইলিশ', 'নারকেল', 'Hilsa', 'Coconut'], descBn: 'ইলিশের রাজধানী — নদীমাতৃক বরিশালের ইলিশ ও নারকেলের খাবার বিশ্বখ্যাত', descEn: 'Capital of Hilsa — Barishal is world-renowned for its river Hilsa and coconut cuisine' },
-  { id: 'khulna', nameBn: 'খুলনা', nameEn: 'Khulna', x: 35, y: 68, iconicDishes: ['চিংড়ি', 'গলদা', 'Shrimp', 'Prawn'], descBn: 'সুন্দরবনের কোলে — খুলনার চিংড়ি ও গলদা মাছ দেশ-বিদেশে সমাদৃত', descEn: 'In the lap of Sundarbans — Khulna\'s shrimp and prawns are celebrated globally' },
-  { id: 'sylhet', nameBn: 'সিলেট', nameEn: 'Sylhet', x: 82, y: 22, iconicDishes: ['সাতকরা', 'শুটকি', 'Satkora', 'Dried Fish'], descBn: 'চা বাগানের শহর — সিলেটের সাতকরা দিয়ে রান্না ও শুটকি অনন্য', descEn: 'City of tea gardens — Sylhet\'s Satkora curry and dried fish are unique' },
-  { id: 'rajshahi', nameBn: 'রাজশাহী', nameEn: 'Rajshahi', x: 28, y: 28, iconicDishes: ['আম', 'কালাই রুটি', 'Mango', 'Kalai Ruti'], descBn: 'আমের রাজধানী — রাজশাহীর আম ও কালাই রুটি ঐতিহ্যবাহী', descEn: 'Capital of mangoes — Rajshahi\'s mangoes and Kalai Ruti are legendary' },
-  { id: 'chattogram', nameBn: 'চট্টগ্রাম', nameEn: 'Chattogram', x: 78, y: 58, iconicDishes: ['মেজবানি', 'শুটকি', 'Mezban', 'Shutki'], descBn: 'বন্দরনগরী — চট্টগ্রামের মেজবানি গোশত ও সামুদ্রিক মাছ অসাধারণ', descEn: 'Port city — Chattogram\'s Mezban feast and seafood are extraordinary' },
-  { id: 'dhaka', nameBn: 'ঢাকা', nameEn: 'Dhaka', x: 55, y: 42, iconicDishes: ['বিরিয়ানি', 'কাচ্চি', 'Biryani', 'Kacchi'], descBn: 'পুরান ঢাকার ঐতিহ্য — কাচ্চি বিরিয়ানি ও বাকরখানি ঢাকার গর্ব', descEn: 'Old Dhaka heritage — Kacchi Biryani and Bakarkhani are Dhaka\'s pride' },
-  { id: 'rangpur', nameBn: 'রংপুর', nameEn: 'Rangpur', x: 35, y: 12, iconicDishes: ['ভর্তা', 'সিঁদল', 'Bhorta', 'Shidal'], descBn: 'উত্তরবঙ্গের স্বাদ — রংপুরের ভর্তা ও সিঁদল সংস্কৃতি অনন্য', descEn: 'Taste of North Bengal — Rangpur\'s Bhorta and Shidal culture is unique' },
-  { id: 'mymensingh', nameBn: 'ময়মনসিংহ', nameEn: 'Mymensingh', x: 60, y: 28, iconicDishes: ['মিঠা পানির মাছ', 'পিঠা', 'Freshwater Fish', 'Pitha'], descBn: 'হাওর অঞ্চল — ময়মনসিংহের মিঠা পানির মাছ ও পিঠার ঐতিহ্য', descEn: 'Haor region — Mymensingh\'s freshwater fish and Pitha tradition' },
+  { id: 'barishal', nameBn: 'বরিশাল', nameEn: 'Barishal', x: 48, y: 72, iconicDishes: ['ইলিশ', 'নারকেল', 'পায়রা', 'কুয়াকাটা', 'পটুয়াখালী', 'ভোলা', 'Hilsa', 'Coconut', 'Payra'], descBn: 'ইলিশের রাজধানী — নদীমাতৃক বরিশালের ইলিশ ও নারকেলের খাবার বিশ্বখ্যাত', descEn: 'Capital of Hilsa — Barishal is world-renowned for its river Hilsa and coconut cuisine' },
+  { id: 'khulna', nameBn: 'খুলনা', nameEn: 'Khulna', x: 35, y: 68, iconicDishes: ['চিংড়ি', 'গলদা', 'সুন্দরবন', 'সাতক্ষীরা', 'বাগেরহাট', 'পারশে', 'যশোর', 'Shrimp', 'Prawn', 'Sundarbans', 'Satkhira'], descBn: 'সুন্দরবনের কোলে — খুলনার চিংড়ি ও গলদা মাছ দেশ-বিদেশে সমাদৃত', descEn: 'In the lap of Sundarbans — Khulna\'s shrimp and prawns are celebrated globally' },
+  { id: 'sylhet', nameBn: 'সিলেট', nameEn: 'Sylhet', x: 82, y: 22, iconicDishes: ['সাতকরা', 'শুটকি', 'সুনামগঞ্জ', 'হাওর', 'Satkora', 'Dried Fish', 'Sunamganj', 'Haor'], descBn: 'চা বাগানের শহর — সিলেটের সাতকরা দিয়ে রান্না ও শুটকি অনন্য', descEn: 'City of tea gardens — Sylhet\'s Satkora curry and dried fish are unique' },
+  { id: 'rajshahi', nameBn: 'রাজশাহী', nameEn: 'Rajshahi', x: 28, y: 28, iconicDishes: ['আম', 'কালাই রুটি', 'নওগাঁ', 'পাবনা', 'কুষ্টিয়া', 'বগুড়া', 'নাটোর', 'Mango', 'Kalai Ruti', 'Naogaon', 'Pabna'], descBn: 'আমের রাজধানী — রাজশাহীর আম ও কালাই রুটি ঐতিহ্যবাহী', descEn: 'Capital of mangoes — Rajshahi\'s mangoes and Kalai Ruti are legendary' },
+  { id: 'chattogram', nameBn: 'চট্টগ্রাম', nameEn: 'Chattogram', x: 78, y: 58, iconicDishes: ['মেজবানি', 'শুটকি', 'কক্সবাজার', 'টেকনাফ', 'সেন্টমার্টিন', 'কাপ্তাই', 'উপকূল', 'Mezban', 'Shutki', "Cox's Bazar", 'Kaptai', 'Chittagong'], descBn: 'বন্দরনগরী — চট্টগ্রামের মেজবানি গোশত ও সামুদ্রিক মাছ অসাধারণ', descEn: 'Port city — Chattogram\'s Mezban feast and seafood are extraordinary' },
+  { id: 'dhaka', nameBn: 'ঢাকা', nameEn: 'Dhaka', x: 55, y: 42, iconicDishes: ['বিরিয়ানি', 'কাচ্চি', 'খিচুড়ি', 'পোলাও', 'নরসিংদী', 'গোপালগঞ্জ', 'Biryani', 'Kacchi', 'Khichuri', 'Polao'], descBn: 'পুরান ঢাকার ঐতিহ্য — কাচ্চি বিরিয়ানি ও বাকরখানি ঢাকার গর্ব', descEn: 'Old Dhaka heritage — Kacchi Biryani and Bakarkhani are Dhaka\'s pride' },
+  { id: 'rangpur', nameBn: 'রংপুর', nameEn: 'Rangpur', x: 35, y: 12, iconicDishes: ['ভর্তা', 'সিঁদল', 'দিনাজপুর', 'কালিজিরা', 'কাটারি', 'উত্তরবঙ্গ', 'Bhorta', 'Shidal', 'Dinajpur', 'Kalijira'], descBn: 'উত্তরবঙ্গের স্বাদ — রংপুরের ভর্তা ও সিঁদল সংস্কৃতি অনন্য', descEn: 'Taste of North Bengal — Rangpur\'s Bhorta and Shidal culture is unique' },
+  { id: 'mymensingh', nameBn: 'ময়মনসিংহ', nameEn: 'Mymensingh', x: 60, y: 28, iconicDishes: ['মিঠা পানির মাছ', 'পিঠা', 'কিশোরগঞ্জ', 'গুলশা', 'পাবদা', 'Freshwater Fish', 'Pitha', 'Kishoreganj'], descBn: 'হাওর অঞ্চল — ময়মনসিংহের মিঠা পানির মাছ ও পিঠার ঐতিহ্য', descEn: 'Haor region — Mymensingh\'s freshwater fish and Pitha tradition' },
+  { id: 'comilla', nameBn: 'কুমিল্লা', nameEn: 'Comilla', x: 70, y: 48, iconicDishes: ['রসমালাই', 'নোয়াখালী', 'কুমিল্লা', 'মেঘনা', 'Rossomalai', 'Noakhali', 'Comilla', 'Meghna'], descBn: 'রসমালাইয়ের দেশ — কুমিল্লার মিষ্টি ও মেঘনা অববাহিকার মাছ অতুলনীয়', descEn: 'Land of Rossomalai — Comilla\'s sweets and Meghna basin fish are incomparable' },
 ];
 
 const DistrictFoodMap = () => {
@@ -40,20 +41,37 @@ const DistrictFoodMap = () => {
     return dbItems.map(dbItemToFoodItem);
   }, [dbItems]);
 
-  // Match items from DB by checking if the item's region/name matches district keywords
+  // Match items from DB by checking location field against district keywords
   const getDistrictItems = (district: District): FoodItem[] => {
     const keywords = [
       district.nameBn.toLowerCase(),
       district.nameEn.toLowerCase(),
       ...district.iconicDishes.map(d => d.toLowerCase()),
     ];
-    return allItems.filter(item => {
-      const searchFields = [
-        item.name, item.nameEn, item.region || '', item.regionEn || '',
-        item.description, item.descriptionEn,
-      ].map(s => s.toLowerCase());
-      return keywords.some(k => searchFields.some(f => f.includes(k)));
-    }).slice(0, 4);
+    
+    // Also match raw DB location field for richer results
+    const rawDbItems = dbItems || [];
+    const matchedIds = new Set<string>();
+    const results: FoodItem[] = [];
+
+    for (const dbItem of rawDbItems) {
+      const loc = (dbItem.location || '').toLowerCase();
+      const locEn = (dbItem.location_en || '').toLowerCase();
+      const name = dbItem.name.toLowerCase();
+      const nameEn = (dbItem.name_en || '').toLowerCase();
+      const desc = dbItem.description.toLowerCase();
+      const descEn = (dbItem.description_en || '').toLowerCase();
+      
+      const allFields = [loc, locEn, name, nameEn, desc, descEn];
+      const matched = keywords.some(k => allFields.some(f => f.includes(k)));
+      
+      if (matched && !matchedIds.has(dbItem.id)) {
+        matchedIds.add(dbItem.id);
+        results.push(dbItemToFoodItem(dbItem));
+      }
+      if (results.length >= 6) break;
+    }
+    return results;
   };
 
   return (
